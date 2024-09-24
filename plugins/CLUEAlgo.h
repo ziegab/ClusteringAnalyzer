@@ -205,22 +205,22 @@ void CLUEAlgo<T, NLAYERS>::makeClusters() {
   prepareDataStructures(allLayerTiles);
   auto finish = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = finish - start;
-  std::cout << "--- prepareDataStructures:     " << elapsed.count() * 1000
-            << " ms\n";
+  // std::cout << "--- prepareDataStructures:     " << elapsed.count() * 1000
+  //           << " ms\n";
 
   start = std::chrono::high_resolution_clock::now();
   calculateLocalDensity(allLayerTiles);
   finish = std::chrono::high_resolution_clock::now();
   elapsed = finish - start;
-  std::cout << "--- calculateLocalDensity:     " << elapsed.count() * 1000
-            << " ms\n";
+  // std::cout << "--- calculateLocalDensity:     " << elapsed.count() * 1000
+  //           << " ms\n";
 
   start = std::chrono::high_resolution_clock::now();
   calculateDistanceToHigher(allLayerTiles);
   finish = std::chrono::high_resolution_clock::now();
   elapsed = finish - start;
-  std::cout << "--- calculateDistanceToHigher: " << elapsed.count() * 1000
-            << " ms\n";
+  // std::cout << "--- calculateDistanceToHigher: " << elapsed.count() * 1000
+  //           << " ms\n";
 
   findAndAssignClusters();
 }
@@ -356,8 +356,8 @@ void CLUEAlgo<T, NLAYERS>::findAndAssignClusters() {
 
   auto finish = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = finish - start;
-  std::cout << "--- findSeedAndFollowers:      " << elapsed.count() * 1000
-            << " ms\n";
+  // std::cout << "--- findSeedAndFollowers:      " << elapsed.count() * 1000
+  //           << " ms\n";
 
   start = std::chrono::high_resolution_clock::now();
   // expend clusters from seeds
@@ -376,8 +376,8 @@ void CLUEAlgo<T, NLAYERS>::findAndAssignClusters() {
   }
   finish = std::chrono::high_resolution_clock::now();
   elapsed = finish - start;
-  std::cout << "--- assignClusters:            " << elapsed.count() * 1000
-            << " ms\n";
+  // std::cout << "--- assignClusters:            " << elapsed.count() * 1000
+  //           << " ms\n";
 }
 
 template <typename T, int NLAYERS>

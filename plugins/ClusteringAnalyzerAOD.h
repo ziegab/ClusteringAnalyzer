@@ -25,7 +25,7 @@
 
 using namespace std;
 
-void exclude_stats_outliers(std::vector<float> &v) {
+void exclude_stats_outliersAOD(std::vector<float> &v) {
   if (v.size() == 1)
     return;
   float mean = std::accumulate(v.begin(), v.end(), 0.0) / v.size();
@@ -43,7 +43,7 @@ void exclude_stats_outliers(std::vector<float> &v) {
           v.end());
 }
 
-pair<float, float> stats(const std::vector<float> &v) {
+pair<float, float> statsAOD(const std::vector<float> &v) {
   float m = std::accumulate(v.begin(), v.end(), 0.0) / v.size();
   float sum = std::accumulate(v.begin(), v.end(), 0.0, [m](float acc, float x) {
     return acc + (x - m) * (x - m);
@@ -52,18 +52,18 @@ pair<float, float> stats(const std::vector<float> &v) {
   return {m, std::sqrt(sum / den)};
 }
 
-void printTimingReport(std::vector<float> &vals, int repeats,
+void printTimingReportAOD(std::vector<float> &vals, int repeats,
                        const std::string label = "SUMMARY ") {
   int precision = 2;
   float mean = 0.f;
   float sigma = 0.f;
-  exclude_stats_outliers(vals);
-  tie(mean, sigma) = stats(vals);
+  exclude_stats_outliersAOD(vals);
+  tie(mean, sigma) = statsAOD(vals);
   std::cout << label << " 1 outliers(" << repeats << "/" << vals.size() << ") "
             << std::fixed << std::setprecision(precision) << mean << " +/- "
             << sigma << " [ms]" << std::endl;
-  exclude_stats_outliers(vals);
-  tie(mean, sigma) = stats(vals);
+  exclude_stats_outliersAOD(vals);
+  tie(mean, sigma) = statsAOD(vals);
   std::cout << label << " 2 outliers(" << repeats << "/" << vals.size() << ") "
             << std::fixed << std::setprecision(precision) << mean << " +/- "
             << sigma << " [ms]" << std::endl;
@@ -130,7 +130,7 @@ void printTimingReport(std::vector<float> &vals, int repeats,
 
 //   readDataFromFile(inputFileName, x, y, layer, weight);
 
-std::vector<int> mainRunEB( std::vector<float> x, std::vector<float> y,
+std::vector<int> mainRunEBAOD( std::vector<float> x, std::vector<float> y,
                           std::vector<int> layer, std::vector<float> weight,
                           const float dc,
                           const float rhoc, const float outlierDeltaFactor,
@@ -165,7 +165,7 @@ std::vector<int> mainRunEB( std::vector<float> x, std::vector<float> y,
     }
   }
 
-  // printTimingReport(vals, repeats, "SUMMARY Native CPU:");
+  printTimingReportAOD(vals, repeats, "SUMMARY Native CPU:");
   // output result to outputFileName. -1 means all points.
   if (verbose) clueAlgo.verboseResults(outputFileName, -1);
   // }
@@ -174,7 +174,7 @@ std::vector<int> mainRunEB( std::vector<float> x, std::vector<float> y,
   return clueAlgo.clusterId();
 }
 
-std::vector<int> mainRunEE( std::vector<float> x, std::vector<float> y,
+std::vector<int> mainRunEEAOD( std::vector<float> x, std::vector<float> y,
                           std::vector<int> layer, std::vector<float> weight,
                           const float dc,
                           const float rhoc, const float outlierDeltaFactor,
@@ -209,7 +209,7 @@ std::vector<int> mainRunEE( std::vector<float> x, std::vector<float> y,
     }
   }
 
-  // printTimingReport(vals, repeats, "SUMMARY Native CPU:");
+  printTimingReportAOD(vals, repeats, "SUMMARY Native CPU:");
   // output result to outputFileName. -1 means all points.
   if (verbose) clueAlgo.verboseResults(outputFileName, -1);
   // }
@@ -218,7 +218,7 @@ std::vector<int> mainRunEE( std::vector<float> x, std::vector<float> y,
   return clueAlgo.clusterId();
 }
 
-std::vector<int> mainRunES( std::vector<float> x, std::vector<float> y,
+std::vector<int> mainRunESAOD( std::vector<float> x, std::vector<float> y,
                           std::vector<int> layer, std::vector<float> weight,
                           const float dc,
                           const float rhoc, const float outlierDeltaFactor,
@@ -253,7 +253,7 @@ std::vector<int> mainRunES( std::vector<float> x, std::vector<float> y,
     }
   }
 
-  // printTimingReport(vals, repeats, "SUMMARY Native CPU:");
+  printTimingReportAOD(vals, repeats, "SUMMARY Native CPU:");
   // output result to outputFileName. -1 means all points.
   if (verbose) clueAlgo.verboseResults(outputFileName, -1);
   // }

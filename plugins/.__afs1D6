@@ -209,63 +209,63 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   //   1.0962, 1.1136, 1.131, 1.1484, 1.1658, 1.1832, 1.2006, 1.218, 1.2354, 1.2528, 1.2702, 1.2876, 1.305, 1.3224, 1.3398, 1.3572,
   //   1.3746, 1.392, 1.4094, 1.4268, 1.4442, 1.4616, 1.479};
 
-  // for (unsigned int i=0; i < EventsToScan_.size(); i++){
-  //   // ===== event maps ====== //
-  //   // hname = Form("PATPhoton_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 170, -85, 85, 360, 0, 360);
-  //   // m_Histos2D[hname]->SetMarkerStyle(29);
-  //   // hname = Form("genPhoton_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , ETA_BINS, etabins, PHI_BINS, -1*philim, philim);
-  //   //  hname = Form("rechitMap_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , ETA_BINS, etabins, PHI_BINS, -1*philim, philim);
-  //   // hname = Form("clusteredMap_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , ETA_BINS, etabins, PHI_BINS, -1*philim, philim);
-  //   // // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 171, -1.479, 1.479, 361, -3.15, 3.15);
+  for (unsigned int i=0; i < EventsToScan_.size(); i++){
+    // ===== event maps ====== //
+    // hname = Form("PATPhoton_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 170, -85, 85, 360, 0, 360);
+    // m_Histos2D[hname]->SetMarkerStyle(29);
+    // hname = Form("genPhoton_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , ETA_BINS, etabins, PHI_BINS, -1*philim, philim);
+    //  hname = Form("rechitMap_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , ETA_BINS, etabins, PHI_BINS, -1*philim, philim);
+    // hname = Form("clusteredMap_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , ETA_BINS, etabins, PHI_BINS, -1*philim, philim);
+    // // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 171, -1.479, 1.479, 361, -3.15, 3.15);
 
-  //   // ===== rechit maps for detector geometry ====== //
-  //   hname = Form("rechitMapEB_event%i", EventsToScan_[i]) ;
-  //   m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 170, -85, 85, 360, 0, 360);
+    // ===== rechit maps for detector geometry ====== //
+    hname = Form("rechitMapEB_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 170, -85, 85, 360, 0, 360);
     
-  //   hname = Form("rechitMapEEp_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
-  //    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
-  //   hname = Form("rechitMapEEm_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
-  //    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
+    hname = Form("rechitMapEEp_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
+     m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
+    hname = Form("rechitMapEEm_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
+     m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
 
-  //   // hname = Form("rechitMapES1p_event%i", EventsToScan_[i]) ;
-  //   // //m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 2520, -20, 20, 2520, -20, 20);
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
-  //   // hname = Form("rechitMapES1m_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
+    hname = Form("rechitMapES1p_event%i", EventsToScan_[i]) ;
+    //m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 2520, -20, 20, 2520, -20, 20);
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
+    hname = Form("rechitMapES1m_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
 
-  //   // hname = Form("rechitMapES2p_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
-  //   // hname = Form("rechitMapES2m_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
+    hname = Form("rechitMapES2p_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
+    hname = Form("rechitMapES2m_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
 
 
-  //   hname = Form("clusteredMapEB_event%i", EventsToScan_[i]) ;
-  //   m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 170, -85, 85, 360, 0, 360);
+    hname = Form("clusteredMapEB_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 170, -85, 85, 360, 0, 360);
 
-  //   hname = Form("clusteredMapEEp_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
-  //    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
-  //   hname = Form("clusteredMapEEm_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
-  //    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
+    hname = Form("clusteredMapEEp_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
+     m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
+    hname = Form("clusteredMapEEm_event%i", EventsToScan_[i]) ;
+    // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 101, -50, 50, 101, -50, 50);
+     m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 100, 0, 100, 100, 0, 100);
     
-  //   // hname = Form("clusteredMapES1p_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
-  //   // hname = Form("clusteredMapES1m_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
+    hname = Form("clusteredMapES1p_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
+    hname = Form("clusteredMapES1m_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 40, 0, 40, 1280, 0, 1280);
 
-  //   // hname = Form("clusteredMapES2p_event%i", EventsToScan_[i]) ;
-  //   // //m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 2520, -20, 20, 2520, -20, 20);
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
-  //   // hname = Form("clusteredMapES2m_event%i", EventsToScan_[i]) ;
-  //   // m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
-  // }
+    hname = Form("clusteredMapES2p_event%i", EventsToScan_[i]) ;
+    //m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 2520, -20, 20, 2520, -20, 20);
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
+    hname = Form("clusteredMapES2m_event%i", EventsToScan_[i]) ;
+    m_Histos2D[hname] = fs->make<TH2F>(hname, hname , 1280, 0, 1280, 40, 0, 40);
+  }
   
 }
 
@@ -428,8 +428,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       v_layer.push_back(layer);
       v_weight.push_back(E);
 
-      // hname = Form("rechitMapEB_event%i", nev);
-      // FillHist2D(hname, detID.ieta(), detID.iphi(), E);
+      hname = Form("rechitMapEB_event%i", nev);
+      FillHist2D(hname, detID.ieta(), detID.iphi(), E);
 
       // hname = Form("rechitMap_event%i", nev);
       // FillHist2D(hname, eta, phi, E);
@@ -468,8 +468,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
         v_layer_pEE.push_back(layer);
         v_weight_pEE.push_back(E);
 
-        // hname = Form("rechitMapEEp_event%i", nev);
-        // FillHist2D(hname, detID.ix(), detID.iy(), E);
+        hname = Form("rechitMapEEp_event%i", nev);
+        FillHist2D(hname, detID.ix(), detID.iy(), E);
       }
       else if ((eta<0)&&(E>1.0e-10)){
         // EEtotE += E;
@@ -480,8 +480,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
         v_layer_mEE.push_back(layer);
         v_weight_mEE.push_back(E);
 
-        // hname = Form("rechitMapEEm_event%i", nev);
-        // FillHist2D(hname, detID.ix(), detID.iy(), E);
+        hname = Form("rechitMapEEm_event%i", nev);
+        FillHist2D(hname, detID.ix(), detID.iy(), E);
       }
       // hname = Form("rechitMap_event%i", nev);
       // FillHist2D(hname, eta, phi, E);
@@ -521,8 +521,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_layer_pES1.push_back(layer);
           v_weight_pES1.push_back(E);
 
-          // hname = Form("rechitMapES1p_event%i", nev);
-          // FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
+          hname = Form("rechitMapES1p_event%i", nev);
+          FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
         }
         else if ((eta<0)&&(E>1.0e-10)){
           v_x_mES1.push_back((detID.six()-1)*32+ detID.strip());
@@ -532,8 +532,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_layer_mES1.push_back(layer);
           v_weight_mES1.push_back(E);
 
-          // hname = Form("rechitMapES1m_event%i", nev);
-          // FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
+          hname = Form("rechitMapES1m_event%i", nev);
+          FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
         }
       }
       else if (detID.plane()==2){//shower profiles in the x (horizontal) direction
@@ -545,8 +545,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_layer_pES2.push_back(layer);
           v_weight_pES2.push_back(E);
 
-          // hname = Form("rechitMapES2p_event%i", nev);
-          // FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
+          hname = Form("rechitMapES2p_event%i", nev);
+          FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
         }
         else if ((eta<0)&&(E>1.0e-10)){
           v_x_mES2.push_back((detID.six()-1)*32+ detID.strip());
@@ -556,8 +556,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_layer_mES2.push_back(layer);
           v_weight_mES2.push_back(E);
 
-          // hname = Form("rechitMapES2m_event%i", nev);
-          // FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
+          hname = Form("rechitMapES2m_event%i", nev);
+          FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
         }
       }
       // hname = Form("rechitMap_event%i", nev);
@@ -604,9 +604,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   // std::cout << "Events" << EventsToScan_ << std::endl;
 
-  // ~~~~~~~~~~~~~~ Making CSV File ~~~~~~~~~~~~~~~~~
   auto higgsE = EBtotE + EEtotE;
-  std::string filename = "clustering10.0Ma100.3000vpTME1.csv";
+  std::string filename = "clustering1.0Ma10.3000vpTME1.csv";
   if (numgenpho==2){
     std::ofstream outFile(filename, std::ios::app);
     // outFile.open();
@@ -619,42 +618,42 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   }
 
 
-  // std::cout << "" << std::endl;
-  // hname = Form("clusteredMapEB_event%i", nev);
-  // for (int i =0; i<int(v_clusterID_EB.size()); i++){
-  //   if (v_clusterID_EB[i] == -1){v_clusterID_EB[i] = 999;}
-  //   FillHist2D(hname, v_eta[i], v_phi[i], v_clusterID_EB[i]+1);
-  // }
-  // hname = Form("clusteredMapEEp_event%i", nev);
-  // for (int i =0; i<int(v_clusterID_EEp.size()); i++){
-  //   if (v_clusterID_EEp[i] == -1){v_clusterID_EEp[i] = 999;}
-  //   FillHist2D(hname, v_x_pEE[i], v_y_pEE[i], v_clusterID_EEp[i]+1);
-  // }
-  //  hname = Form("clusteredMapEEm_event%i", nev);
-  // for (int i =0; i<int(v_clusterID_EEm.size()); i++){
-  //   if (v_clusterID_EEm[i] == -1){v_clusterID_EEm[i] = 999;}
-  //   FillHist2D(hname, v_x_mEE[i], v_y_mEE[i], v_clusterID_EEm[i]+1);
-  // }
-  // // hname = Form("clusteredMapES1p_event%i", nev);
-  // // for (int i =0; i<int(v_clusterID_ES1p.size()); i++){
-  // //   if (v_clusterID_ES1p[i] == -1){v_clusterID_ES1p[i] = 999;}
-  // //   FillHist2D(hname, v_x_pES1[i], v_y_pES1[i], v_clusterID_ES1p[i]+1);
-  // // }
-  // //  hname = Form("clusteredMapES1m_event%i", nev);
-  // // for (int i =0; i<int(v_clusterID_ES1m.size()); i++){
-  // //   if (v_clusterID_ES1m[i] == -1){v_clusterID_ES1m[i] = 999;}
-  // //   FillHist2D(hname, v_x_mES1[i], v_y_mES1[i], v_clusterID_ES1m[i]+1);
-  // // }
-  // // hname = Form("clusteredMapES2p_event%i", nev);
-  // // for (int i =0; i<int(v_clusterID_ES2p.size()); i++){
-  // //   if (v_clusterID_ES2p[i] == -1){v_clusterID_ES2p[i] = 999;}
-  // //   FillHist2D(hname, v_x_pES2[i], v_y_pES2[i], v_clusterID_ES2p[i]+1);
-  // // }
-  // //  hname = Form("clusteredMapES2m_event%i", nev);
-  // // for (int i =0; i<int(v_clusterID_ES2m.size()); i++){
-  // //   if (v_clusterID_ES2m[i] == -1){v_clusterID_ES2m[i] = 999;}
-  // //   FillHist2D(hname, v_x_mES2[i], v_y_mES2[i], v_clusterID_ES2m[i]+1);
-  // // }
+  std::cout << "" << std::endl;
+  hname = Form("clusteredMapEB_event%i", nev);
+  for (int i =0; i<int(v_clusterID_EB.size()); i++){
+    if (v_clusterID_EB[i] == -1){v_clusterID_EB[i] = 999;}
+    FillHist2D(hname, v_eta[i], v_phi[i], v_clusterID_EB[i]+1);
+  }
+  hname = Form("clusteredMapEEp_event%i", nev);
+  for (int i =0; i<int(v_clusterID_EEp.size()); i++){
+    if (v_clusterID_EEp[i] == -1){v_clusterID_EEp[i] = 999;}
+    FillHist2D(hname, v_x_pEE[i], v_y_pEE[i], v_clusterID_EEp[i]+1);
+  }
+   hname = Form("clusteredMapEEm_event%i", nev);
+  for (int i =0; i<int(v_clusterID_EEm.size()); i++){
+    if (v_clusterID_EEm[i] == -1){v_clusterID_EEm[i] = 999;}
+    FillHist2D(hname, v_x_mEE[i], v_y_mEE[i], v_clusterID_EEm[i]+1);
+  }
+  hname = Form("clusteredMapES1p_event%i", nev);
+  for (int i =0; i<int(v_clusterID_ES1p.size()); i++){
+    if (v_clusterID_ES1p[i] == -1){v_clusterID_ES1p[i] = 999;}
+    FillHist2D(hname, v_x_pES1[i], v_y_pES1[i], v_clusterID_ES1p[i]+1);
+  }
+   hname = Form("clusteredMapES1m_event%i", nev);
+  for (int i =0; i<int(v_clusterID_ES1m.size()); i++){
+    if (v_clusterID_ES1m[i] == -1){v_clusterID_ES1m[i] = 999;}
+    FillHist2D(hname, v_x_mES1[i], v_y_mES1[i], v_clusterID_ES1m[i]+1);
+  }
+  hname = Form("clusteredMapES2p_event%i", nev);
+  for (int i =0; i<int(v_clusterID_ES2p.size()); i++){
+    if (v_clusterID_ES2p[i] == -1){v_clusterID_ES2p[i] = 999;}
+    FillHist2D(hname, v_x_pES2[i], v_y_pES2[i], v_clusterID_ES2p[i]+1);
+  }
+   hname = Form("clusteredMapES2m_event%i", nev);
+  for (int i =0; i<int(v_clusterID_ES2m.size()); i++){
+    if (v_clusterID_ES2m[i] == -1){v_clusterID_ES2m[i] = 999;}
+    FillHist2D(hname, v_x_mES2[i], v_y_mES2[i], v_clusterID_ES2m[i]+1);
+  }
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   // if the SetupData is always needed
