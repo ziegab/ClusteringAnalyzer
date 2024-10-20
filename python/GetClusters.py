@@ -84,6 +84,8 @@ for event in minievents:
 	# 	higgsvec += totvecpho[i]
 	higgspt = higgsvec.Pt()
 	higgsE = higgsvec.E()
+	higgsboostvec = higgsvec.BoostVector()
+	higgsboost = higgsboostvec.Mag()
 	# print(numpatpho)
 	# if numpatpho >= 2:
 	# print(higgspt, higgsvec.Eta(), higgsvec.Phi(), higgsvec.E(), higgsvec.M())
@@ -110,7 +112,7 @@ for event in minievents:
 		# print("found")
 		with open(sys.argv[5], 'a', newline='') as csvfile:
 			test2writer = csv.writer(csvfile, dialect='excel')
-			test2writer.writerow([numpatpho] + [higgspt] + [higgsmass] + [higgsE])
+			test2writer.writerow([numpatpho] + [higgspt] + [higgsmass] + [higgsE] + [higgsboost])
 
 	
 

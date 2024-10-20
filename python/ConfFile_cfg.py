@@ -32,7 +32,8 @@ process.source = cms.Source("PoolSource",
 # Input histogram file to be filled maybe
 process.TFileService = cms.Service("TFileService", 
                                   #  fileName = cms.string('hist_ClusteringAnalyzer_AtoGG_500events1.0Ma1000.10000pTPU.root')
-                                   fileName = cms.string('hist_ClusteringAnalyzer_AtoGG500events1.0Ma100.3000pTPU.root')
+                                   fileName = cms.string('hist_ClusteringAnalyzer_AtoGG500events10.0Ma100.3000pTPU.root')
+                                  #  fileName = cms.string('hist_ClusteringAnalyzer_1Dinfo')
                                 #    fileName = cms.string('hist_ClusteringAnalyzer_BkkToGRadionToGGG_M1-500_R0-5.root')
 )
 eventN = list(range(1, (nevents+1)))
@@ -41,6 +42,7 @@ process.clus = cms.EDAnalyzer('ClusteringAnalyzer',
    ecalRechitsEE = cms.InputTag('reducedEgamma','reducedEERecHits'),
    ecalRechitsES = cms.InputTag('reducedEgamma','reducedESRecHits'),
    genParticles = cms.InputTag('packedGenParticles'),
+   genRecoParticles = cms.InputTag('prunedGenParticles'),
    photons = cms.InputTag('slimmedPhotons'),
   #  electrons = cms.InputTag('slimmedElectrons'),
    EventsToScan = cms.vint32(eventN),

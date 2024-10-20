@@ -22,7 +22,7 @@ import numpy as np
 
 # Goal: Take cluster and pt info from csv and plot it
 
-# Command line: python3 python/ClustersvspT.py clusters.csv clusters.pdf 10 1000
+# Command line: python3 python/ClustersvspT.py clusters.csv clusters.pdf 0 1000
 # arguments: Name of csv file, Name of pdf file, Emin, Emax
 
 # Initialize 1D histograms
@@ -34,6 +34,7 @@ numpatpho = []
 patphopt = []
 patphoM = []
 patphoE = []
+patphoBoost = []
 with open(sys.argv[1], 'r') as csvfile:
     test1reader = csv.reader(csvfile, dialect='excel')
     for row in test1reader:
@@ -43,6 +44,7 @@ with open(sys.argv[1], 'r') as csvfile:
             patphopt.append(float(row[1]))
             patphoM.append(float(row[2]))
             patphoE.append(float(row[3]))
+            patphoBoost.append(float(row[4]))
     numrows = test1reader.line_num
 
 # for i in range(numrows-1):
@@ -87,7 +89,7 @@ NBinsX = 0
 NBinsY = 0
 binpT = [0]
 binclust = [0]
-counterX = 0
+counterX = float(sys.argv[3])
 counterY = 0
 Xbinsizes = [11]
 Xbinincrements = [float(sys.argv[4])/10]
@@ -136,21 +138,47 @@ H_efficiency = TH2F("Efficiency", "2 Photon Pair Mass: 3 Photon Pair Mass", (NBi
 #     smallmasses[i] = float(tmpstr2)
 
 # Next step: average efficiency values over the ranges of the bin widths, then fill.
-counter1 = 0
+
+
+# print(NBinsX)
+# print(binpT)
+summingvar = patphoBoost
+bincounter = [0] * (NBinsX)
+# print(bincounter)
+# print(len(bincounter))
+# print(summingvar[3], patphopt[3], patphoM[3])
+
+
+countertot = 0
 for i in range(numrows-1):
     if numpatpho[i] <= 5: # and patphopt[i] != 0:
-        counter1 += 1
-    # H_efficiencycount.Fill(smallmasses[i], largemasses[i])
+        countertot += 1
+        for j in range(NBinsX):
+            if binpT[j] <= summingvar[i] < binpT[j+1]:
+                bincounter[j] += 1
 for i in range(numrows-1):
     if numpatpho[i] <= 5:
-        # H_efficiency.Fill(patphopt[i], numpatpho[i], 1/counter1)
-        # H_efficiency.Fill(patphoM[i], numpatpho[i], 1/counter1)
-        if patphoE[i] == 0:
-            counter1 -= 1
-            continue
-        else:
-            H_efficiency.Fill(patphoM[i]/patphoE[i], numpatpho[i], 1/counter1)
-    # H_smallEpct.Fill(smallmasses[i], largemasses[i], smallEpct[i])
+        for j in range(NBinsX):
+            if binpT[j] <= summingvar[i] < binpT[j+1]:
+                H_efficiency.Fill(summingvar[i], numpatpho[i], 1/bincounter[j])
+            # # if doing Mass/Energy, need to remove any zeros: (not working ): )
+            # if patphoE[i] == 0:
+            #     countertot -= 1
+            #     bincounter[j] -= (1/NBinsX)
+            #     continue
+            # if binpT[j] <= patphoM[i]/patphoE[i] < binpT[j+1] and bincounter[j] != 0:
+            #     H_efficiency.Fill(patphoM[i]/patphoE[i], numpatpho[i], 1/bincounter[j])
+    #     # H_efficiency.Fill(patphopt[i], numpatpho[i], 1/counter1)
+    #     # H_efficiency.Fill(patphoM[i], numpatpho[i], 1/counter1)
+    #     if patphoE[i] == 0:
+    #         countertot -= 1
+    #         continue
+    #     else:
+    #         H_efficiency.Fill(patphoM[i]/patphoE[i], numpatpho[i], 1/countertot)
+    # # H_smallEpct.Fill(smallmasses[i], largemasses[i], smallEpct[i])
+
+# print(bincounter)
+# print(countertot)
 
 # for j in range(NBinsY):
 #     for i in range(NBinsX):
@@ -165,9 +193,10 @@ H_efficiency.SetStats(0)
 # H_efficiency.SetTitle("PAT Clusters vs. Higgs pT")
 # H_efficiency.SetTitle("PAT Clusters vs. Higgs Mass")
 # H_efficiency.SetTitle("PAT Clusters vs. Higgs MoE")
+H_efficiency.SetTitle("PAT Clusters vs. Higgs Boost")
 # H_efficiency.SetTitle("CLUE Clusters vs. Higgs pT")
 # H_efficiency.SetTitle("CLUE Clusters vs. Higgs Mass")
-H_efficiency.SetTitle("CLUE Clusters vs. Higgs MoE")
+# H_efficiency.SetTitle("CLUE Clusters vs. Higgs MoE")
 gStyle.SetPalette(109)
 gStyle.SetPaintTextFormat("4.2f")
 C1 = TCanvas()
@@ -179,15 +208,16 @@ H_efficiency.Draw("colztext")
 xAxis = H_efficiency.GetXaxis()
 # xAxis.SetTitle("Higgs pT (GeV)")
 # xAxis.SetTitle("Higgs Mass (GeV)")
-xAxis.SetTitle("Higgs MoE")
+# xAxis.SetTitle("Higgs MoE")
+xAxis.SetTitle("Higgs Boost")
 xAxis.CenterTitle(kTRUE)
 # gStyle.SetNdivisions(n=len(smallmasses), axis='x')
 # gStyle.SetPadTickX(smallmasses)
 
 
 yAxis = H_efficiency.GetYaxis()
-# yAxis.SetTitle("PAT Clusters")
-yAxis.SetTitle("CLUE Clusters")
+yAxis.SetTitle("PAT Clusters")
+# yAxis.SetTitle("CLUE Clusters")
 yAxis.CenterTitle(kTRUE)
 C1.Print(sys.argv[2])
 # C1.Print("efficiencymap7.root")
