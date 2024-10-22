@@ -142,10 +142,8 @@ private:
 
   edm::ESGetToken<CaloGeometry, CaloGeometryRecord> caloGeometryToken_;
   std::vector<int> EventsToScan_;
-  int nEvent = 0;
   int nEventPAT = 0;
 
-  TTree *tree2;
   std::vector<double> mHiggs;
   std::vector<double> betaval;
   std::vector<double> gammaval;
@@ -155,6 +153,12 @@ private:
   std::vector<double> cluster_E;
   // std::vector<double> cluster_eta;
   // std::vector<double> cluster_phi;
+  std::vector<double> higgs_eta;
+  std::vector<std::string> strlayer;
+  std::vector<std::vector<double>> hit_E;
+  std::vector<std::vector<double>> hit_eta;
+  std::vector<std::vector<double>> hit_phi;
+  std::vector<int> clustID;
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
@@ -191,48 +195,59 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
 #endif
   //now do what ever initialization is needed
   //usesResource("TFileService");
-  edm::Service<TFileService> fs2;
-  tree2 = fs2->make<TTree>("Events", "Events");
-  // TString hname2; // initializes variable for histogram name, to be reused for each histogram
-
-  // hname2 = Form("mH");
-  // m_Histos1D[hname2] = fs2->make<TH1F>(hname2, "Mass of Higgs", 100, 0., 100.);
-  // hname2 = Form("betaval");
-  // m_Histos1D[hname2] = fs2->make<TH1F>(hname2, "Beta Value", 100, 0.9, 1.);
-  // hname2 = Form("gammaval");
-  // m_Histos1D[hname2] = fs2->make<TH1F>(hname2, "Lorentz Factor Value", 100, 0., 250.);
-  // hname2 = Form("nphoton");
-  // m_Histos1D[hname2] = fs2->make<TH1I>(hname2, "Number of PAT Photons", 6, 0, 6);
-  // hname2 = Form("passEvent");
-  // m_Histos1D[hname2] = fs2->make<TH1I>(hname2, "PAT Photons Exist", 2, 0, 2);
-  // hname2 = Form("nClsuters");
-  // m_Histos1D[hname2] = fs2->make<TH1I>(hname2, "Number of CLUE Clusters", 6, 0, 6);
-  // hname2 = Form("cluster_E");
-  // m_Histos1D[hname2] = fs2->make<TH1F>(hname2, "Sum of Clustered Crystal Energy");
-
-
-  tree2->Branch("mH", &mHiggs);
-  tree2->GetBranch("mH")->SetTitle("Mass of Higgs");
-  tree2->Branch("betaval", &betaval);
-  tree2->GetBranch("betaval")->SetTitle("Beta Value");
-  tree2->Branch("gammaval", &gammaval);
-  tree2->GetBranch("gammaval")->SetTitle("Lorentz Factor Value");
-  tree2->Branch("nphoton", &nPatPho);
-  tree2->GetBranch("nphoton")->SetTitle("Number of PAT Photons");
-  tree2->Branch("passEvent", &passesEvent);
-  tree2->GetBranch("passEvent")->SetTitle("PAT Photons Exist");
-  tree2->Branch("nClusters", &nClusters);
-  tree2->GetBranch("nClusters")->SetTitle("Total Number of Clusters per Event");
-  tree2->Branch("cluster_E", &cluster_E);
-  tree2->GetBranch("cluster_E")->SetTitle("Sum of Clustered Crystal Energy");
-  // tree2->Branch("cluster_eta", &cluster_eta);
-  // tree2->GetBranch("cluster_eta")->SetTitle("Eta of the Cluster Seed");
-  // tree2->Branch("cluster_phi", &cluster_phi);
-  // tree2->GetBranch("cluster_phi")->SetTitle("Phi of the Cluster Seed");
- 
   edm::Service<TFileService> fs;
 
   TString hname; // initializes variable for histogram name, to be reused for each histogram
+
+  tree = fs->make<TTree>("Events", "Events");
+
+  // hname = Form("mH");
+  // m_Histos1D[hname] = fs->make<TH1F>(hname, "Mass of Higgs", 100, 0., 100.);
+  // hname = Form("betaval");
+  // m_Histos1D[hname] = fs->make<TH1F>(hname, "Beta Value", 100, 0.9, 1.);
+  // hname = Form("gammaval");
+  // m_Histos1D[hname] = fs->make<TH1F>(hname, "Lorentz Factor Value", 100, 0., 250.);
+  // hname = Form("nphoton");
+  // m_Histos1D[hname] = fs->make<TH1I>(hname, "Number of PAT Photons", 6, 0, 6);
+  // hname = Form("passEvent");
+  // m_Histos1D[hname] = fs->make<TH1I>(hname, "PAT Photons Exist", 2, 0, 2);
+  // hname = Form("nClsuters");
+  // m_Histos1D[hname] = fs->make<TH1I>(hname, "Number of CLUE Clusters", 6, 0, 6);
+  // hname = Form("cluster_E");
+  // m_Histos1D[hname] = fs->make<TH1F>(hname, "Sum of Clustered Crystal Energy");
+
+
+  tree->Branch("mH", &mHiggs);
+  tree->GetBranch("mH")->SetTitle("Mass of Higgs");
+  tree->Branch("betaval", &betaval);
+  tree->GetBranch("betaval")->SetTitle("Beta Value");
+  tree->Branch("gammaval", &gammaval);
+  tree->GetBranch("gammaval")->SetTitle("Lorentz Factor Value");
+  tree->Branch("nphoton", &nPatPho);
+  tree->GetBranch("nphoton")->SetTitle("Number of PAT Photons");
+  tree->Branch("passEvent", &passesEvent);
+  tree->GetBranch("passEvent")->SetTitle("PAT Photons Exist");
+  tree->Branch("nClusters", &nClusters);
+  tree->GetBranch("nClusters")->SetTitle("Total Number of Clusters per Event");
+  tree->Branch("cluster_E", &cluster_E);
+  tree->GetBranch("cluster_E")->SetTitle("Sum of Clustered Crystal Energy");
+  // tree->Branch("cluster_eta", &cluster_eta);
+  // tree->GetBranch("cluster_eta")->SetTitle("Eta of the Cluster Seed");
+  // tree->Branch("cluster_phi", &cluster_phi);
+  // tree->GetBranch("cluster_phi")->SetTitle("Phi of the Cluster Seed");
+  tree->Branch("higgs_eta", &higgs_eta);
+  tree->GetBranch("higgs_eta")->SetTitle("Eta of Higgs");
+  tree->Branch("strlayer", &strlayer);
+  tree->GetBranch("strlayer")->SetTitle("Detector Layer");
+  tree->Branch("hit_E", &hit_E);
+  tree->GetBranch("hit_E")->SetTitle("Energy per hit per event");
+  tree->Branch("hit_eta", &hit_eta);
+  tree->GetBranch("hit_eta")->SetTitle("Eta of hit per event");
+  tree->Branch("hit_phi", &hit_phi);
+  tree->GetBranch("hit_phi")->SetTitle("Phi of hit per event");
+  tree->Branch("clustID", &clustID);
+  tree->GetBranch("clustID")->SetTitle("ID of cluster");
+
 
   //  // ~~~~~~~~~ Include L183-L239 to make CLUE plots ~~~~~~~~~
   // for (unsigned int i=0; i < EventsToScan_.size(); i++){
@@ -309,7 +324,7 @@ ClusteringAnalyzer::~ClusteringAnalyzer() {
 // ------------ method called for each event  ------------
 void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   using namespace edm;
-  nEvent++; // increment the total event count
+  nev++; // increment the total event count
   mHiggs.clear();
   betaval.clear();
   gammaval.clear();
@@ -319,8 +334,19 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   cluster_E.clear();
   // cluster_eta.clear();
   // cluster_phi.clear();
+  higgs_eta.clear();
+  strlayer.clear();
+  hit_E.clear();
+  hit_eta.clear();
+  hit_phi.clear();
+  clustID.clear();
+
 
   TString hname; // initializes variable for histogram name, to be reused for each histogram
+
+  std::vector<double> temp_hit_E;
+  std::vector<double> temp_hit_eta;
+  std::vector<double> temp_hit_phi;
 
   std::vector<hit> rechitsEB, rechitsEEp, rechitsEEm;
 
@@ -371,11 +397,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   std::vector<int> v_layer_mES2;
   std::vector<float> v_weight_mES2;
 
-  nev++;
 
-
-  // double higgspatpt = 0;
-  TLorentzVector higgspatvec;
   //======= PAT PHOTONS =======
   edm::Handle<std::vector<pat::Photon> > patpho;
   iEvent.getByToken(photonToken_, patpho);
@@ -387,18 +409,14 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   for(size_t i = 0; i < patpho->size(); ++ i) {
     const pat::Photon & p = (*patpho)[i];
     std::cout << "Found a PAT photon with pt, eta, phi, energy : " << p.pt() << ", " << p.eta() << ", " << p.phi() << ", " << p.energy() << std::endl;
-    if ((p.pt()>10)){ // & p.photonID("mvaPhoID-RunIIFall17-v2-wp90")){ // pt and ID cut on PAT photons
+    if ((p.pt()>10)){ // & p.photonID("mvaPhoID-Fall17-iso-V2-wp90")){ // pt and ID cut on PAT photons
       nPhotons++; // increment the photon count in each step
       passEvent = true;
-      TLorentzVector tempphovec;
-      tempphovec.SetPtEtaPhiE(p.pt(), p.eta(), p.phi(), p.energy());
-      higgspatvec += tempphovec;
     }
     if (passEvent) nEventPAT++;
     // hname = Form("PATPhoton_event%i", nev);
     // FillHist2D(hname, p.eta()*(85/1.4), p.phi()*(180/3.14159265), p.energy()) ;
   }
-  // higgspatpt = higgspatvec.Pt();
 
 //   //======= ELECTRONS =======
 //   edm::Handle<std::vector<pat::Electron> > elec;
@@ -441,6 +459,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       beta = boost_vec.Mag(); // Magnitude of the boost vector
       gamma = gamma_L.Eval(beta); // Lorentz factor
       std::cout << "Boost: " << beta << ", gamma_L: " << gamma << std::endl;
+      higgs_eta.push_back(gen.eta());
     }
 
     // if ((gen.pdgId() == 22) & (gen.status()==1) & (gen.pt()>10)){
@@ -504,6 +523,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       v_phi.push_back(detID.iphi());
       v_layer.push_back(layer);
       v_weight.push_back(E);
+      strlayer.push_back("Barrel");
+      temp_hit_E.push_back(E);
+      temp_hit_eta.push_back(detID.ieta());
+      temp_hit_phi.push_back(detID.iphi());
+      clustID.push_back(detID);
 
       // hname = Form("rechitMapEB_event%i", nev);
       // FillHist2D(hname, detID.ieta(), detID.iphi(), E);
@@ -544,6 +568,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
         v_phi_pEE.push_back(phi);
         v_layer_pEE.push_back(layer);
         v_weight_pEE.push_back(E);
+        strlayer.push_back("Endcap");
+        temp_hit_E.push_back(E);
+        temp_hit_eta.push_back(detID.ix());
+        temp_hit_phi.push_back(detID.iy());
+        clustID.push_back(detID);
 
         // hname = Form("rechitMapEEp_event%i", nev);
         // FillHist2D(hname, detID.ix(), detID.iy(), E);
@@ -556,6 +585,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
         v_phi_mEE.push_back(phi);
         v_layer_mEE.push_back(layer);
         v_weight_mEE.push_back(E);
+        strlayer.push_back("Endcap");
+        temp_hit_E.push_back(E);
+        temp_hit_eta.push_back(detID.ix());
+        temp_hit_phi.push_back(detID.iy());
+        clustID.push_back(detID);
 
         // hname = Form("rechitMapEEm_event%i", nev);
         // FillHist2D(hname, detID.ix(), detID.iy(), E);
@@ -597,6 +631,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_pES1.push_back(phi);
           v_layer_pES1.push_back(layer);
           v_weight_pES1.push_back(E);
+          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES1p_event%i", nev);
           // FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
@@ -608,6 +643,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_mES1.push_back(phi);
           v_layer_mES1.push_back(layer);
           v_weight_mES1.push_back(E);
+          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES1m_event%i", nev);
           // FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
@@ -621,6 +657,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_pES2.push_back(phi);
           v_layer_pES2.push_back(layer);
           v_weight_pES2.push_back(E);
+          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES2p_event%i", nev);
           // FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
@@ -632,6 +669,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_mES2.push_back(phi);
           v_layer_mES2.push_back(layer);
           v_weight_mES2.push_back(E);
+          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES2m_event%i", nev);
           // FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
@@ -685,6 +723,9 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   // ~~~~~~~ nTupling for GEN/PAT info ~~~~~~~
   nClusters.push_back(totClusters);
   cluster_E.push_back(higgsE);
+  hit_E.push_back(temp_hit_E);
+  hit_eta.push_back(temp_hit_eta);
+  hit_phi.push_back(temp_hit_phi);
   // cluster_eta.push_back();
   // cluster_phi.push_back();
 
@@ -740,7 +781,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   // //   FillHist2D(hname, v_x_mES2[i], v_y_mES2[i], v_clusterID_ES2m[i]+1);
   // // }
 
-  tree2->Fill();
+  tree->Fill();
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   // if the SetupData is always needed
