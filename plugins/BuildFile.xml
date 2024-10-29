@@ -15,5 +15,6 @@
 <use name="CondFormats/DataRecord"/>
 <use name="Geometry/CommonTopologies"/>
 <use name="CommonTools/UtilAlgos"/>
+<use name="DataFormats/PatCandidates"/>
 
 <flags EDM_PLUGIN="1"/>

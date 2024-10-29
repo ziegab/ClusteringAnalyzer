@@ -150,15 +150,53 @@ private:
   std::vector<int> nPatPho;
   std::vector<bool> passesEvent;
   std::vector<int> nClusters;
-  std::vector<double> cluster_E;
-  // std::vector<double> cluster_eta;
-  // std::vector<double> cluster_phi;
+  std::vector<float> cluster_E;
+  std::vector<float> cluster_eta;
+  std::vector<float> cluster_phi;
   std::vector<double> higgs_eta;
-  std::vector<std::string> strlayer;
-  std::vector<std::vector<double>> hit_E;
-  std::vector<std::vector<double>> hit_eta;
-  std::vector<std::vector<double>> hit_phi;
-  std::vector<int> clustID;
+  std::vector<std::vector<float>> EB_E;
+  std::vector<std::vector<float>> EB_eta;
+  std::vector<std::vector<float>> EB_phi;
+  std::vector<std::vector<float>> pEE_E;
+  std::vector<std::vector<float>> pEE_x;
+  std::vector<std::vector<float>> pEE_y;
+  std::vector<std::vector<float>> mEE_E;
+  std::vector<std::vector<float>> mEE_x;
+  std::vector<std::vector<float>> mEE_y;
+  std::vector<std::vector<float>> pES1_E;
+  std::vector<std::vector<float>> pES1_x;
+  std::vector<std::vector<float>> pES1_y;
+  std::vector<std::vector<float>> pES2_E;
+  std::vector<std::vector<float>> pES2_x;
+  std::vector<std::vector<float>> pES2_y;
+  std::vector<std::vector<float>> mES1_E;
+  std::vector<std::vector<float>> mES1_x;
+  std::vector<std::vector<float>> mES1_y;
+  std::vector<std::vector<float>> mES2_E;
+  std::vector<std::vector<float>> mES2_x;
+  std::vector<std::vector<float>> mES2_y;
+  std::vector<std::vector<int>> EB_clustID;
+  std::vector<std::vector<int>> pEE_clustID;
+  std::vector<std::vector<int>> mEE_clustID;
+  std::vector<std::vector<int>> pES1_clustID;
+  std::vector<std::vector<int>> pES2_clustID;
+  std::vector<std::vector<int>> mES1_clustID;
+  std::vector<std::vector<int>> mES2_clustID;
+  // std::vector<double> EB_cluster_E;
+  // std::vector<double> EB_cluster_eta;
+  // std::vector<double> EB_cluster_phi;
+  // std::vector<double> pEE_cluster_E;
+  // std::vector<double> pEE_cluster_x;
+  // std::vector<double> pEE_cluster_y;
+  // std::vector<double> mEE_cluster_E;
+  // std::vector<double> mEE_cluster_x;
+  // std::vector<double> mEE_cluster_y;
+  // std::vector<double> pES1_cluster_E;
+  // std::vector<double> pES1_cluster_x;
+  // std::vector<double> pES1_cluster_y;
+
+
+  // std::vector<int> clustID;
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
@@ -231,22 +269,68 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("nClusters")->SetTitle("Total Number of Clusters per Event");
   tree->Branch("cluster_E", &cluster_E);
   tree->GetBranch("cluster_E")->SetTitle("Sum of Clustered Crystal Energy");
-  // tree->Branch("cluster_eta", &cluster_eta);
-  // tree->GetBranch("cluster_eta")->SetTitle("Eta of the Cluster Seed");
-  // tree->Branch("cluster_phi", &cluster_phi);
-  // tree->GetBranch("cluster_phi")->SetTitle("Phi of the Cluster Seed");
+  tree->Branch("cluster_eta", &cluster_eta);
+  tree->GetBranch("cluster_eta")->SetTitle("Eta/X of the Cluster Seed");
+  tree->Branch("cluster_phi", &cluster_phi);
+  tree->GetBranch("cluster_phi")->SetTitle("Phi/Y of the Cluster Seed");
   tree->Branch("higgs_eta", &higgs_eta);
   tree->GetBranch("higgs_eta")->SetTitle("Eta of Higgs");
-  tree->Branch("strlayer", &strlayer);
-  tree->GetBranch("strlayer")->SetTitle("Detector Layer");
-  tree->Branch("hit_E", &hit_E);
-  tree->GetBranch("hit_E")->SetTitle("Energy per hit per event");
-  tree->Branch("hit_eta", &hit_eta);
-  tree->GetBranch("hit_eta")->SetTitle("Eta of hit per event");
-  tree->Branch("hit_phi", &hit_phi);
-  tree->GetBranch("hit_phi")->SetTitle("Phi of hit per event");
-  tree->Branch("clustID", &clustID);
-  tree->GetBranch("clustID")->SetTitle("ID of cluster");
+  tree->Branch("EB_E", &EB_E);
+  tree->GetBranch("EB_E")->SetTitle("Energy per hit in barrel per event");
+  tree->Branch("EB_eta", &EB_eta);
+  tree->GetBranch("EB_eta")->SetTitle("X of hit in barrel per event");
+  tree->Branch("EB_phi", &EB_phi);
+  tree->GetBranch("EB_phi")->SetTitle("Phi of hit in barrel per event");
+  tree->Branch("pEE_E", &pEE_E);
+  tree->GetBranch("pEE_E")->SetTitle("Energy per hit in + endcap per event");
+  tree->Branch("pEE_x", &pEE_x);
+  tree->GetBranch("pEE_x")->SetTitle("X of hit in + endcap per event");
+  tree->Branch("pEE_y", &pEE_y);
+  tree->GetBranch("pEE_y")->SetTitle("Y of hit in + endcap per event");
+  tree->Branch("mEE_E", &mEE_E);
+  tree->GetBranch("mEE_E")->SetTitle("Energy per hit in - endcap per event");
+  tree->Branch("mEE_x", &mEE_x);
+  tree->GetBranch("mEE_x")->SetTitle("X of hit in - endcap per event");
+  tree->Branch("mEE_y", &mEE_y);
+  tree->GetBranch("mEE_y")->SetTitle("Y of hit in - endcap per event");
+  tree->Branch("pES1_E", &pES1_E);
+  tree->GetBranch("pES1_E")->SetTitle("Energy per hit in + preshower 1 per event");
+  tree->Branch("pES1_x", &pES1_x);
+  tree->GetBranch("pES1_x")->SetTitle("X of hit in + preshower 1 per event");
+  tree->Branch("pES1_y", &pES1_y);
+  tree->GetBranch("pES1_y")->SetTitle("Y of hit in + preshower 1 per event");
+  tree->Branch("pES2_E", &pES2_E);
+  tree->GetBranch("pES2_E")->SetTitle("Energy per hit in + preshower 2 per event");
+  tree->Branch("pES2_x", &pES2_x);
+  tree->GetBranch("pES2_x")->SetTitle("X of hit in + preshower 2 per event");
+  tree->Branch("pES2_y", &pES2_y);
+  tree->GetBranch("pES2_y")->SetTitle("Y of hit in + preshower 2 per event");
+  tree->Branch("mES1_E", &mES1_E);
+  tree->GetBranch("mES1_E")->SetTitle("Energy per hit in - preshower 1 per event");
+  tree->Branch("mES1_x", &mES1_x);
+  tree->GetBranch("mES1_x")->SetTitle("X of hit in - preshower 1 per event");
+  tree->Branch("mES1_y", &mES1_y);
+  tree->GetBranch("mES1_y")->SetTitle("Y of hit in - preshower 1 per event");
+  tree->Branch("mES2_E", &mES2_E);
+  tree->GetBranch("mES2_E")->SetTitle("Energy per hit in - preshower 2 per event");
+  tree->Branch("mES2_x", &mES2_x);
+  tree->GetBranch("mES2_x")->SetTitle("X of hit in - preshower 2 per event");
+  tree->Branch("mES2_y", &mES2_y);
+  tree->GetBranch("mES2_y")->SetTitle("Y of hit in - preshower 2 per event");
+  tree->Branch("EB_clustID", &EB_clustID);
+  tree->GetBranch("EB_clustID")->SetTitle("ID of barrel cluster");
+  tree->Branch("pEE_clustID", &pEE_clustID);
+  tree->GetBranch("pEE_clustID")->SetTitle("ID of + endcap cluster");
+  tree->Branch("mEE_clustID", &mEE_clustID);
+  tree->GetBranch("mEE_clustID")->SetTitle("ID of - endcap cluster");
+  tree->Branch("pES1_clustID", &pES1_clustID);
+  tree->GetBranch("pES1_clustID")->SetTitle("ID of + preshower 1 cluster");
+  tree->Branch("pES2_clustID", &pES2_clustID);
+  tree->GetBranch("pES2_clustID")->SetTitle("ID of + preshower 2 cluster");
+  tree->Branch("mES1_clustID", &mES1_clustID);
+  tree->GetBranch("mES1_clustID")->SetTitle("ID of - preshower 1 cluster");
+  tree->Branch("mES2_clustID", &mES2_clustID);
+  tree->GetBranch("mES2_clustID")->SetTitle("ID of - preshower 2 cluster");
 
 
   //  // ~~~~~~~~~ Include L183-L239 to make CLUE plots ~~~~~~~~~
@@ -332,21 +416,40 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   passesEvent.clear();
   nClusters.clear();
   cluster_E.clear();
-  // cluster_eta.clear();
-  // cluster_phi.clear();
+  cluster_eta.clear();
+  cluster_phi.clear();
   higgs_eta.clear();
-  strlayer.clear();
-  hit_E.clear();
-  hit_eta.clear();
-  hit_phi.clear();
-  clustID.clear();
+  EB_E.clear();
+  EB_eta.clear();
+  EB_phi.clear();
+  pEE_E.clear();
+  pEE_x.clear();
+  pEE_y.clear();
+  mEE_E.clear();
+  mEE_x.clear();
+  mEE_y.clear();
+  pES1_E.clear();
+  pES1_x.clear();
+  pES1_y.clear();
+  mES1_E.clear();
+  mES1_x.clear();
+  mES1_y.clear();
+  pES2_E.clear();
+  pES2_x.clear();
+  pES2_y.clear();
+  mES2_E.clear();
+  mES2_x.clear();
+  mES2_y.clear();
+  EB_clustID.clear();
+  pEE_clustID.clear();
+  mEE_clustID.clear();
+  pES1_clustID.clear();
+  pES2_clustID.clear();
+  mES1_clustID.clear();
+  mES2_clustID.clear();
 
 
   TString hname; // initializes variable for histogram name, to be reused for each histogram
-
-  std::vector<double> temp_hit_E;
-  std::vector<double> temp_hit_eta;
-  std::vector<double> temp_hit_phi;
 
   std::vector<hit> rechitsEB, rechitsEEp, rechitsEEm;
 
@@ -409,7 +512,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   for(size_t i = 0; i < patpho->size(); ++ i) {
     const pat::Photon & p = (*patpho)[i];
     std::cout << "Found a PAT photon with pt, eta, phi, energy : " << p.pt() << ", " << p.eta() << ", " << p.phi() << ", " << p.energy() << std::endl;
-    if ((p.pt()>10)){ // & p.photonID("mvaPhoID-Fall17-iso-V2-wp90")){ // pt and ID cut on PAT photons
+    std::cout << "Is Photon ID Available: " << p.isPhotonIDAvailable("mvaPhoID-RunIIFall17-v2-wp90") <<  std::endl;
+    if ((p.pt()>10) & p.photonID("mvaPhoID-RunIIFall17-v2-wp90")){ // pt and ID cut on PAT photons
       nPhotons++; // increment the photon count in each step
       passEvent = true;
     }
@@ -523,11 +627,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       v_phi.push_back(detID.iphi());
       v_layer.push_back(layer);
       v_weight.push_back(E);
-      strlayer.push_back("Barrel");
-      temp_hit_E.push_back(E);
-      temp_hit_eta.push_back(detID.ieta());
-      temp_hit_phi.push_back(detID.iphi());
-      clustID.push_back(detID);
 
       // hname = Form("rechitMapEB_event%i", nev);
       // FillHist2D(hname, detID.ieta(), detID.iphi(), E);
@@ -535,7 +634,9 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // hname = Form("rechitMap_event%i", nev);
       // FillHist2D(hname, eta, phi, E);
     }
+    
   }
+  // hit_eta.push_back(v_eta);
 
   //======= ECAL ENDCAP ==========
   const CaloSubdetectorGeometry* EEgeom = caloGeometry->getSubdetectorGeometry(DetId::Ecal, EcalSubdetector::EcalEndcap);
@@ -568,11 +669,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
         v_phi_pEE.push_back(phi);
         v_layer_pEE.push_back(layer);
         v_weight_pEE.push_back(E);
-        strlayer.push_back("Endcap");
-        temp_hit_E.push_back(E);
-        temp_hit_eta.push_back(detID.ix());
-        temp_hit_phi.push_back(detID.iy());
-        clustID.push_back(detID);
 
         // hname = Form("rechitMapEEp_event%i", nev);
         // FillHist2D(hname, detID.ix(), detID.iy(), E);
@@ -585,11 +681,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
         v_phi_mEE.push_back(phi);
         v_layer_mEE.push_back(layer);
         v_weight_mEE.push_back(E);
-        strlayer.push_back("Endcap");
-        temp_hit_E.push_back(E);
-        temp_hit_eta.push_back(detID.ix());
-        temp_hit_phi.push_back(detID.iy());
-        clustID.push_back(detID);
 
         // hname = Form("rechitMapEEm_event%i", nev);
         // FillHist2D(hname, detID.ix(), detID.iy(), E);
@@ -631,7 +722,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_pES1.push_back(phi);
           v_layer_pES1.push_back(layer);
           v_weight_pES1.push_back(E);
-          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES1p_event%i", nev);
           // FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
@@ -643,7 +733,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_mES1.push_back(phi);
           v_layer_mES1.push_back(layer);
           v_weight_mES1.push_back(E);
-          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES1m_event%i", nev);
           // FillHist2D(hname, detID.six(), (detID.siy()-1)*32+detID.strip(), E);
@@ -657,7 +746,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_pES2.push_back(phi);
           v_layer_pES2.push_back(layer);
           v_weight_pES2.push_back(E);
-          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES2p_event%i", nev);
           // FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
@@ -669,7 +757,6 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
           v_phi_mES2.push_back(phi);
           v_layer_mES2.push_back(layer);
           v_weight_mES2.push_back(E);
-          // strlayer.push_back("Preshower");
 
           // hname = Form("rechitMapES2m_event%i", nev);
           // FillHist2D(hname, (detID.six()-1)*32+ detID.strip(), detID.siy(), E);
@@ -701,33 +788,118 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   if (v_x_mES2.size()>0) {v_clusterID_ES2m = mainRunES(v_x_mES2, v_y_mES2, v_layer_mES2, v_weight_mES2, dc_ES, rhoc, outlierDeltaFactor, 0, Nevents, 0);}
 
   int totClusters = 0;
+  int EBClusters = 0;
+  int EEpClusters = 0;
+  int EEmClusters = 0;
   auto maxElementEB = std::max_element(v_clusterID_EB.begin(), v_clusterID_EB.end());
   if (v_eta.size()>0) {
-      std::cout << "Number of EB clusters found: " << *maxElementEB+1 << std::endl;
-      totClusters += *maxElementEB+1;
+      EBClusters = *maxElementEB+1;
+      std::cout << "Number of EB clusters found: " << EBClusters << std::endl;
+      totClusters += EBClusters;
     }
   auto maxElementEEp = std::max_element(v_clusterID_EEp.begin(), v_clusterID_EEp.end());
   if (v_x_pEE.size()>0) {
-      std::cout << "Number of EEp clusters found: " << *maxElementEEp+1 << std::endl;
-      totClusters += *maxElementEEp+1;
+      EEpClusters = *maxElementEEp+1;
+      std::cout << "Number of EEp clusters found: " << EEpClusters << std::endl;
+      totClusters += EEpClusters;
     }
   auto maxElementEEm = std::max_element(v_clusterID_EEm.begin(), v_clusterID_EEm.end());
   if (v_x_mEE.size()>0) {
-      std::cout << "Number of EEm clusters found: " << *maxElementEEm+1 << std::endl;
-      totClusters += *maxElementEEm+1;
+      EEmClusters = *maxElementEEm+1;
+      std::cout << "Number of EEm clusters found: " << EEmClusters << std::endl;
+      totClusters += EEmClusters;
     }
 
   // std::cout << "Events" << EventsToScan_ << std::endl;
 
-  double higgsE = EBtotE + EEtotE;
+  // // ~~~~~~~ Cluster Location and Info ~~~~~~~
+  if (EBClusters>0) {for (int i =0; i<(EBClusters); i++){
+    float totClustE = 0;
+    float sumXE = 0;
+    float sumYE = 0;
+    for (int j=0; j<int(v_eta.size()); j++){
+      if (v_clusterID_EB[j] == i){
+        totClustE += v_weight[j];
+        sumXE += v_eta[j] * v_weight[j];
+        sumYE += v_phi[j] * v_weight[j];
+      }
+    }
+    if (totClustE > 0){
+      cluster_E.push_back(totClustE);
+      cluster_eta.push_back(sumXE/totClustE);
+      cluster_phi.push_back(sumYE/totClustE);
+    }
+  }}
+
+  if (EEpClusters>0) {for (int i =0; i<int(EEpClusters); i++){
+    float totClustE = 0;
+    float sumXE = 0;
+    float sumYE = 0;
+    for (int j=0; j<int(v_eta_pEE.size()); j++){
+      if (v_clusterID_EEp[j] == i){
+        totClustE += v_weight_pEE[j];
+        sumXE += v_x_pEE[j] * v_weight_pEE[j];
+        sumYE += v_y_pEE[j] * v_weight_pEE[j];
+      }
+    }
+    if (totClustE > 0){
+      cluster_E.push_back(totClustE);
+      cluster_eta.push_back(sumXE/totClustE);
+      cluster_phi.push_back(sumYE/totClustE);
+    }
+  }}
+
+  if (EEmClusters>0) {for (int i =0; i<int(EEmClusters); i++){
+    float totClustE = 0;
+    float sumXE = 0;
+    float sumYE = 0;
+    for (int j=0; j<int(v_eta_mEE.size()); j++){
+      if (v_clusterID_EEm[j] == i){
+        totClustE += v_weight_mEE[j];
+        sumXE += v_x_mEE[j] * v_weight_mEE[j];
+        sumYE += v_y_mEE[j] * v_weight_mEE[j];
+      }
+    }
+    if (totClustE > 0){
+      cluster_E.push_back(totClustE);
+      cluster_eta.push_back(sumXE/totClustE);
+      cluster_phi.push_back(sumYE/totClustE);
+    }
+  }}
+
+
+
+  // double higgsE = EBtotE + EEtotE;
   // ~~~~~~~ nTupling for GEN/PAT info ~~~~~~~
   nClusters.push_back(totClusters);
-  cluster_E.push_back(higgsE);
-  hit_E.push_back(temp_hit_E);
-  hit_eta.push_back(temp_hit_eta);
-  hit_phi.push_back(temp_hit_phi);
-  // cluster_eta.push_back();
-  // cluster_phi.push_back();
+  EB_E.push_back(v_weight);
+  EB_eta.push_back(v_eta);
+  EB_phi.push_back(v_phi);
+  pEE_E.push_back(v_weight_pEE);
+  pEE_x.push_back(v_x_pEE);
+  pEE_y.push_back(v_y_pEE);
+  mEE_E.push_back(v_weight_mEE);
+  mEE_x.push_back(v_x_mEE);
+  mEE_y.push_back(v_y_mEE);
+  pES1_E.push_back(v_weight_pES1);
+  pES1_x.push_back(v_x_pES1);
+  pES1_y.push_back(v_y_pES1);
+  pES2_E.push_back(v_weight_pES2);
+  pES2_x.push_back(v_x_pES2);
+  pES2_y.push_back(v_y_pES2);
+  mES1_E.push_back(v_weight_mES1);
+  mES1_x.push_back(v_x_mES1);
+  mES1_y.push_back(v_y_mES1);
+  mES2_E.push_back(v_weight_mES2);
+  mES2_x.push_back(v_x_mES2);
+  mES2_y.push_back(v_y_mES2);
+  EB_clustID.push_back(v_clusterID_EB);
+  pEE_clustID.push_back(v_clusterID_EEp);
+  mEE_clustID.push_back(v_clusterID_EEm);
+  pES1_clustID.push_back(v_clusterID_ES1p);
+  mES1_clustID.push_back(v_clusterID_ES1m);
+  pES2_clustID.push_back(v_clusterID_ES2p);
+  mES2_clustID.push_back(v_clusterID_ES2m);
 
   // // ~~~~~~~~~~~~~~ Making CSV File ~~~~~~~~~~~~~~~~~
   // double higgsE = EBtotE + EEtotE;
