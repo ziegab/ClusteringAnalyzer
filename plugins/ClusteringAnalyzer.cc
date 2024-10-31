@@ -153,6 +153,17 @@ private:
   std::vector<float> cluster_E;
   std::vector<float> cluster_eta;
   std::vector<float> cluster_phi;
+  std::vector<float> cluster_x;
+  std::vector<float> cluster_y;
+  std::vector<float> EB_cluster_E;
+  std::vector<float> EB_cluster_eta;
+  std::vector<float> EB_cluster_phi;
+  std::vector<float> pEE_cluster_E;
+  std::vector<float> pEE_cluster_x;
+  std::vector<float> pEE_cluster_y;
+  std::vector<float> mEE_cluster_E;
+  std::vector<float> mEE_cluster_x;
+  std::vector<float> mEE_cluster_y;
   std::vector<double> higgs_eta;
   std::vector<std::vector<float>> EB_E;
   std::vector<std::vector<float>> EB_eta;
@@ -182,18 +193,6 @@ private:
   std::vector<std::vector<int>> pES2_clustID;
   std::vector<std::vector<int>> mES1_clustID;
   std::vector<std::vector<int>> mES2_clustID;
-  // std::vector<double> EB_cluster_E;
-  // std::vector<double> EB_cluster_eta;
-  // std::vector<double> EB_cluster_phi;
-  // std::vector<double> pEE_cluster_E;
-  // std::vector<double> pEE_cluster_x;
-  // std::vector<double> pEE_cluster_y;
-  // std::vector<double> mEE_cluster_E;
-  // std::vector<double> mEE_cluster_x;
-  // std::vector<double> mEE_cluster_y;
-  // std::vector<double> pES1_cluster_E;
-  // std::vector<double> pES1_cluster_x;
-  // std::vector<double> pES1_cluster_y;
 
 
   // std::vector<int> clustID;
@@ -270,9 +269,31 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->Branch("cluster_E", &cluster_E);
   tree->GetBranch("cluster_E")->SetTitle("Sum of Clustered Crystal Energy");
   tree->Branch("cluster_eta", &cluster_eta);
-  tree->GetBranch("cluster_eta")->SetTitle("Eta/X of the Cluster Seed");
+  tree->GetBranch("cluster_eta")->SetTitle("Eta of the Cluster Seed");
   tree->Branch("cluster_phi", &cluster_phi);
-  tree->GetBranch("cluster_phi")->SetTitle("Phi/Y of the Cluster Seed");
+  tree->GetBranch("cluster_phi")->SetTitle("Phi of the Cluster Seed");
+  tree->Branch("cluster_x", &cluster_x);
+  tree->GetBranch("cluster_x")->SetTitle("X of the Cluster Seed");
+  tree->Branch("cluster_y", &cluster_y);
+  tree->GetBranch("cluster_y")->SetTitle("Y of the Cluster Seed");
+  tree->Branch("EB_cluster_E", &EB_cluster_E);
+  tree->GetBranch("EB_cluster_E")->SetTitle("Sum of Clustered Crystal Energy in Barrel");
+  tree->Branch("pEE_cluster_E", &pEE_cluster_E);
+  tree->GetBranch("pEE_cluster_E")->SetTitle("Sum of Clustered Crystal Energy in + Endcap");
+  tree->Branch("mEE_cluster_E", &mEE_cluster_E);
+  tree->GetBranch("mEE_cluster_E")->SetTitle("Sum of Clustered Crystal Energy in - Endcap");
+  tree->Branch("EB_cluster_eta", &EB_cluster_eta);
+  tree->GetBranch("EB_cluster_eta")->SetTitle("Eta of the Cluster Seed in Barrel");
+  tree->Branch("EB_cluster_phi", &EB_cluster_phi);
+  tree->GetBranch("EB_cluster_phi")->SetTitle("Phi of the Cluster Seed in Barrel");
+  tree->Branch("pEE_cluster_x", &pEE_cluster_x);
+  tree->GetBranch("pEE_cluster_x")->SetTitle("X of the Cluster Seed in + Endcap");
+  tree->Branch("pEE_cluster_y", &pEE_cluster_y);
+  tree->GetBranch("pEE_cluster_y")->SetTitle("Y of the Cluster Seed in + Endcap");
+  tree->Branch("mEE_cluster_x", &mEE_cluster_x);
+  tree->GetBranch("mEE_cluster_x")->SetTitle("X of the Cluster Seed in - Endcap");
+  tree->Branch("mEE_cluster_y", &mEE_cluster_y);
+  tree->GetBranch("mEE_cluster_y")->SetTitle("Y of the Cluster Seed in - Endcap");
   tree->Branch("higgs_eta", &higgs_eta);
   tree->GetBranch("higgs_eta")->SetTitle("Eta of Higgs");
   tree->Branch("EB_E", &EB_E);
@@ -418,6 +439,17 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   cluster_E.clear();
   cluster_eta.clear();
   cluster_phi.clear();
+  cluster_x.clear();
+  cluster_y.clear();
+  EB_cluster_E.clear();
+  EB_cluster_eta.clear();
+  EB_cluster_phi.clear();
+  pEE_cluster_E.clear();
+  pEE_cluster_x.clear();
+  pEE_cluster_y.clear();
+  mEE_cluster_E.clear();
+  mEE_cluster_x.clear();
+  mEE_cluster_y.clear();
   higgs_eta.clear();
   EB_E.clear();
   EB_eta.clear();
@@ -828,6 +860,9 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       cluster_E.push_back(totClustE);
       cluster_eta.push_back(sumXE/totClustE);
       cluster_phi.push_back(sumYE/totClustE);
+      EB_cluster_E.push_back(totClustE);
+      EB_cluster_eta.push_back(sumXE/totClustE);
+      EB_cluster_phi.push_back(sumYE/totClustE);
     }
   }}
 
@@ -844,8 +879,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     }
     if (totClustE > 0){
       cluster_E.push_back(totClustE);
-      cluster_eta.push_back(sumXE/totClustE);
-      cluster_phi.push_back(sumYE/totClustE);
+      cluster_x.push_back(sumXE/totClustE);
+      cluster_y.push_back(sumYE/totClustE);
+      pEE_cluster_E.push_back(totClustE);
+      pEE_cluster_x.push_back(sumXE/totClustE);
+      pEE_cluster_y.push_back(sumYE/totClustE);
     }
   }}
 
@@ -862,8 +900,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     }
     if (totClustE > 0){
       cluster_E.push_back(totClustE);
-      cluster_eta.push_back(sumXE/totClustE);
-      cluster_phi.push_back(sumYE/totClustE);
+      cluster_x.push_back(sumXE/totClustE);
+      cluster_y.push_back(sumYE/totClustE);
+      mEE_cluster_E.push_back(totClustE);
+      mEE_cluster_x.push_back(sumXE/totClustE);
+      mEE_cluster_y.push_back(sumYE/totClustE);
     }
   }}
 
