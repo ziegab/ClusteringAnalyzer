@@ -145,6 +145,8 @@ private:
   int nEventPAT = 0;
 
   std::vector<double> mHiggs;
+  std::vector<double> pTHiggs;
+  std::vector<double> EHiggs;
   std::vector<double> betaval;
   std::vector<double> gammaval;
   std::vector<int> nPatPho;
@@ -256,6 +258,10 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
 
   tree->Branch("mH", &mHiggs);
   tree->GetBranch("mH")->SetTitle("Mass of Higgs");
+  tree->Branch("pTH", &pTHiggs);
+  tree->GetBranch("pTH")->SetTitle("pT of Higgs");
+  tree->Branch("EH", &EHiggs);
+  tree->GetBranch("EH")->SetTitle("Energy of Higgs");
   tree->Branch("betaval", &betaval);
   tree->GetBranch("betaval")->SetTitle("Beta Value");
   tree->Branch("gammaval", &gammaval);
@@ -354,7 +360,7 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("mES2_clustID")->SetTitle("ID of - preshower 2 cluster");
 
 
-  //  // ~~~~~~~~~ Include L183-L239 to make CLUE plots ~~~~~~~~~
+  //  // ~~~~~~~~~ Include L358-L414 to make CLUE plots ~~~~~~~~~
   // for (unsigned int i=0; i < EventsToScan_.size(); i++){
   //   // ===== event maps ====== //
   //   // hname = Form("PATPhoton_event%i", EventsToScan_[i]) ;
@@ -431,6 +437,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   using namespace edm;
   nev++; // increment the total event count
   mHiggs.clear();
+  pTHiggs.clear();
+  EHiggs.clear();
   betaval.clear();
   gammaval.clear();
   nPatPho.clear();
@@ -571,6 +579,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   double mH_photon = 0; // Higgs mass from reconstructed gen photon
   double beta = -99; // v/c, max value is 1
   double gamma = -99; // 1/sqrt(1-beta^2), always positive
+  double pTH = 0;
+  double EH = 0;
 
   TFormula gamma_L("lorentzFactor", "1/sqrt(1 - x^2)");
 
@@ -590,6 +600,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     if ((gen.pdgId() == 25)){ //} & (gen.status()<30) & (gen.status()>20)){
       std::cout << "Found a Higgs with status, pt, eta, phi, energy : " << gen.status() << ", " << gen.pt() << ", " << gen.eta() << ", " << gen.phi() << ", " << gen.energy() << std::endl;
       mH = gen.mass();
+      pTH = gen.pt();
+      EH = gen.energy();
       four_vec.SetPtEtaPhiE(gen.pt(), gen.eta(), gen.phi(), gen.energy());
       boost_vec = four_vec.BoostVector();
       beta = boost_vec.Mag(); // Magnitude of the boost vector
@@ -608,6 +620,10 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // hname = Form("genPhoton_event%i", nev);
       // FillHist2D(hname, gen.eta(), gen.phi(), gen.energy()) ;
     }
+
+    if ((gen.pdgId() != 22) & (gen.pdgId()!= 25)){
+      std::cout << "Found " << gen.pdgId() << " with status, pt, eta, phi, energy : " << gen.status() << ", " << gen.pt() << ", " << gen.eta() << ", " << gen.phi() << ", " << gen.energy() << std::endl;
+    }
   }
   mH_photon = pho_vec.M();
   if ((mH - mH_photon)>0.0001){
@@ -617,6 +633,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   // ~~~~~~~ nTupling for GEN/PAT info ~~~~~~~
   mHiggs.push_back(mH);
+  pTHiggs.push_back(pTH);
+  EHiggs.push_back(EH);
   betaval.push_back(beta);
   gammaval.push_back(gamma);
   nPatPho.push_back(nPhotons);
@@ -629,7 +647,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> >> handle_RecHitsEB;
   iEvent.getByToken(ecalRecHitsEBToken_, handle_RecHitsEB);
   const EcalRecHitCollection* ecalRecHitsEB = handle_RecHitsEB.product();
-  std::cout << "rechit collection size: " << ecalRecHitsEB->size() << std::endl;
+  std::cout << "EB rechit collection size: " << ecalRecHitsEB->size() << std::endl;
 
   double EBtotE = 0;
   // TLorentzVector EBtotpT;

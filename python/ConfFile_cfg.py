@@ -11,13 +11,15 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v20'
 
-nevents = 500
+nevents = 1000
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(nevents) )
 
 process.source = cms.Source("PoolSource",
                                 # fileNames = cms.untracked.vstring('file:/afs/crc.nd.edu/user/g/gziemyt2/data_analysis/CMSSW_13_2_4/src/test/clusteringanalyzer/MiniAOD20161.root')
                                 # fileNames = cms.untracked.vstring('file:/afs/crc.nd.edu/user/g/gziemyt2/data_analysis/CMSSW_13_2_4/src/test/clusteringanalyzer/tempstore/AtoGG_250events1.0Ma10.02000.0pTPileup_MiniAODv2.root')
-                                fileNames = cms.untracked.vstring('file:/afs/crc.nd.edu/user/g/gziemyt2/data_analysis/CMSSW_13_2_4/src/test/clusteringanalyzer/tempstore/AtoGG_500events10.0Ma100.03000.0pTPileup_MiniAOD.root')
+                                # fileNames = cms.untracked.vstring('file:/afs/crc.nd.edu/user/g/gziemyt2/data_analysis/CMSSW_13_2_4/src/test/clusteringanalyzer/tempstore/AtoGG_500events1p5Ma1p0_1501p0EPileup_MiniAODvalidationSample.root')
+                                fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/g/gziemyte/diphogen/tempstore/AtoGG_1000events0p1Ma0p01_101p0EPileup_MiniAOD.root')
+                                  # 'file:/afs/crc.nd.edu/user/g/gziemyt2/data_analysis/CMSSW_13_2_4/src/test/clusteringanalyzer/tempstore/AtoGG_500events1.0Ma10.03000.0pTPileup_MiniAOD.root')
                                 # fileNames = cms.untracked.vstring('root://cmsxrootd.fnal.gov///store/mc/BuToKJpsi_Toee_Mufilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen/RunIIAutumn18MiniAOD-PUPoissonAve20_BParking_102X_upgrade2018_realistic_v15-v2/MINIAODSIM')
                               #   fileNames = cms.untracked.vstring('file:/afs/crc.nd.edu/user/g/gziemyt2/data_analysis/CMSSW_13_2_4/src/test/clusteringanalyzer/rootfiles/AtoGammaGammaFlatMoE_10events_MiniAOD.root')
                                 # fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/g/gagarwal/work/diphoton/clustering/CMSSW_13_2_4/src/test/ClusteringAnalyzer/BkkToGRadionToGGG_M1-500_R0-5_2018_MiniAOD_0.root')
@@ -32,7 +34,8 @@ process.source = cms.Source("PoolSource",
 # Input histogram file to be filled maybe
 process.TFileService = cms.Service("TFileService", 
                                   #  fileName = cms.string('hist_ClusteringAnalyzer_AtoGG_500events1.0Ma1000.10000pTPU.root')
-                                   fileName = cms.string('hist2_ClusteringAnalyzer_AtoGG500events10.0Ma100.3000pTPU.root')
+                                   fileName = cms.string('hist_ClusteringAnalyzer_AtoGG_1000eventslpc0p1Ma.root')
+                                  #  fileName = cms.string('hist_ClusteringAnalyzer_AtoGG500events10.0Ma100.3000pTPU.root')
                                   #  fileName = cms.string('hist_ClusteringAnalyzer_1Dinfo')
                                 #    fileName = cms.string('hist_ClusteringAnalyzer_BkkToGRadionToGGG_M1-500_R0-5.root')
 )
