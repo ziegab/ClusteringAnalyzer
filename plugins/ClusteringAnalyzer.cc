@@ -823,7 +823,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   const float dc_EE = 1; //(for ECAL Endcap) chosen based on the shower size and the lateral granularity of detectors 
   const float dc_ES = 2; //(for ECAL preshower) chosen based on the shower size and the lateral granularity of detectors
   const float rhoc = 15; //chosen to exclude noise (Originally 5)
-  const float outlierDeltaFactor = 3; //chosen based on the shower sizes and separations
+  const float outlierDeltaFactor = 4; //chosen based on the shower sizes and separations
   const int Nevents = EventsToScan_.size();
   std::cout << "\n###########################################################" <<std::endl;
   std::cout << "Setting cut-off distance 'dc' for EB and EE to: "<< dc_EB << dc_EE << std::endl;
