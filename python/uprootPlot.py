@@ -21,7 +21,8 @@ import numpy as np
 import uproot
 # -----------------------------------------------------------#
 
-file_dirdc2rhoc15delt3 = '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2rhoc15delt4'
+file_dirdc2rhoc15delt3 = '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2rhoc15delt20'
+print(file_dirdc2rhoc15delt3)
 root_filesdc2rhoc15delt3 = glob.glob(f"{file_dirdc2rhoc15delt3}/*.root")
 
 # ~~ Histogramming ~~
@@ -51,10 +52,13 @@ for j in range(len(Ybinsizes)):
 H_efficiency = TH2F("PAT Photon Boost Efficiency", "Boost: Fraction of Events", (NBinsX-1), array('d', binpT), (NBinsY-1), array('d', binclust))
 
 totalEBClustsdc2rhoc15delt3 = 0
+totalnevents = 0
 clustpereventdc2rhoc15delt3counter = 0
+fileswithvalidclust = 0
 totalenergyratio = 0
 for root_file in root_filesdc2rhoc15delt3:
     counterEBClusts = 0
+    neventsinboostrange = 0
     countereventswithEBclust = 0
     with uproot.open(root_file) as file:
         tree = file["clus"]
@@ -69,25 +73,31 @@ for root_file in root_filesdc2rhoc15delt3:
         for i in range(nevents):
             tempEBclustE = 0
             EBClustEcell = EBClustE[i]
-            if len(EBClustEcell) > 0:
-                countereventswithEBclust += 1
-                for j in range(len(EBClustEcell)):
-                    counterEBClusts += (1)
-                    tempEBclustE += EBClustEcell[j]
+            if 9 < gammavalues[i] < 11:
+                neventsinboostrange += 1
+                if len(EBClustEcell) > 0:
+                    countereventswithEBclust += 1
+                    for j in range(len(EBClustEcell)):
+                        counterEBClusts += (1)
+                        tempEBclustE += EBClustEcell[j]
             EBclustEperevent = tempEBclustE
             EBclustEbyEHiggsperevent = EBclustEperevent/genenergy[i] # energy ratio per event
             totalenergyratiopermasspoint += EBclustEbyEHiggsperevent
-        
+    totalnevents += nevents
     # print(counterEBClusts)
-    totalenergyratio += (totalenergyratiopermasspoint/countereventswithEBclust)/len(root_filesdc2rhoc15delt3)
-    totalEBClustsdc2rhoc15delt3 += counterEBClusts/nevents
+    if countereventswithEBclust > 0:
+        fileswithvalidclust += 1
+        totalenergyratio += (totalenergyratiopermasspoint/countereventswithEBclust)#/len(root_filesdc2rhoc15delt3)
+    if neventsinboostrange > 0:
+        totalEBClustsdc2rhoc15delt3 += counterEBClusts#/neventsinboostrange
     # print(totalEBClustsdc2rhoc15delt3)
     # clustpereventdc2rhoc15delt3counter += (totalEBClustsdc2rhoc15delt3/nevents)/len(root_filesdc2rhoc15delt3)
-totclustdc2rhoc15delt3 = totalEBClustsdc2rhoc15delt3/len(root_filesdc2rhoc15delt3)
+totclustdc2rhoc15delt3 = totalEBClustsdc2rhoc15delt3#/fileswithvalidclust#len(root_filesdc2rhoc15delt3)
 # print(len(root_filesdc2rhoc15delt3))
 # print(totalEBClustsdc2rhoc15delt3)
 print(totclustdc2rhoc15delt3)
-print(totalenergyratio)
+print(totalenergyratio/fileswithvalidclust)
+print(totalnevents)
         # print(EBClustE)
     # print(counter)
     # print(nevents)
