@@ -19,7 +19,7 @@ histograms = []
 
 for g in boosts:
     hname = f"boost{g}"
-    htitle = f";rho_c value; Avg. CLUE Cluster per EB Event"
+    htitle = f";rho_c value; Energy Ratio"
     hist = TH1F(hname, htitle, 6, 2.5, 32.5)
     histograms.append(hist)
 
@@ -57,7 +57,7 @@ for idx, hist in enumerate(histograms):
     hist.SetLineColor(idx + 1)  # Different color for each
     hist.SetStats(0)
     hist.SetLineWidth(2)
-    hist.SetTitle("rho_c values vs. CLUE Clusters")
+    hist.SetTitle("rho_c values vs. CLUE Cluster Energy / GEN Energy")
     hist.GetYaxis().SetRangeUser(0, 1.5)
     legend.AddEntry(hist, f"Boost = {boosts[idx]}", "l")
     draw_option = "hist" if idx == 0 else "hist SAME"
