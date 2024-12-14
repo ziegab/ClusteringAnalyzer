@@ -12,7 +12,7 @@ root_files = glob.glob(f"{file_dir}/*.root")
 
 # Define logarithmic bin edges
 n_bins = 30  # Number of bins
-x_min = 10  # Minimum x value (cannot be zero for log scale)
+x_min = 1  # Minimum x value (cannot be zero for log scale)
 x_max = 1000  # Maximum x value
 bin_edges = np.logspace(np.log10(x_min), np.log10(x_max), n_bins + 1)
 
@@ -30,11 +30,12 @@ for f in root_files:#["0p1", "0p2", "0p6", "0p8", "10p0", "15p0", "20p0", "25p0"
     F = TFile(f)#TFile("/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2rhoc20delt3/hist_AtoGG_1000events"+f+"Ma2dc20rhoc3delt.root")
     T = F.Get("clus/Events")
     for e in T:
-        H_gamma.Fill(T.gammaval[0])
-        if (T.passEvent[0]>0) and (-1.5<T.higgs_eta[0]<1.5):
-            H_gammaPATpho.Fill(T.gammaval[0])
-        if (len(T.EB_cluster_E)>0):
-            H_gammaClust.Fill(T.gammaval[0])
+        if (-1.5<T.higgs_eta[0]<1.5):
+            H_gamma.Fill(T.gammaval[0])
+            if (T.passEvent[0]>0): # and (-1.5<T.higgs_eta[0]<1.5):
+                H_gammaPATpho.Fill(T.gammaval[0])
+            if (len(T.EB_cluster_E)>0):
+                H_gammaClust.Fill(T.gammaval[0])
             
 
 H_gammaPATpho.Divide(H_gamma)
@@ -47,18 +48,37 @@ C.cd()
 C.SetLogx()
 H_gammaPATpho.SetTitle("Events with >=1 Photon - WP90 Cut")
 H_gammaPATpho.Draw("hist")
-C.Print("PATphoBoostdc1p5rhoc15delt3v1.root")
+C.Print("PATphoBoostdc1p5rhoc15delt3v2.root")
 
 C2 = TCanvas()
 C2.cd()
 C2.SetLogx()
 H_gammaClust.SetTitle("Events with >=1 Photon - CLUE Clustering")
 H_gammaClust.Draw("hist")
-C2.Print("ClustBoostdc1p5rhoc15delt3v1.root")
+C2.Print("ClustBoostdc1p5rhoc15delt3v2.root")
 
 C3 = TCanvas()
 C3.cd()
 C3.SetLogx()
 H_clustoverPAT.SetTitle("CLUE Clusters over PAT Photons")    
 H_clustoverPAT.Draw("hist")
-C3.Print("CLUEoPATdc1p5rhoc15delt3v1.root")
+C3.Print("CLUEoPATdc1p5rhoc15delt3v2.root")
+
+C4 = TCanvas()
+C4.cd()
+C4.SetLogx()
+H_gammaPATpho.SetLineColor(ROOT.kBlue)
+H_gammaPATpho.SetLineWidth(2)
+H_gammaClust.SetLineColor(ROOT.kRed)
+H_gammaClust.SetLineWidth(2)
+H_gammaPATpho.SetTitle("Events with >=1 Photon")
+H_gammaPATpho.GetYaxis().SetRangeUser(0, 1)
+H_gammaClust.GetYaxis().SetRangeUser(0, 1)
+H_gammaPATpho.Draw("hist")
+H_gammaClust.Draw("hist SAME")
+legend = ROOT.TLegend(0.7, 0.1, 0.9, 0.3)  # x1, y1, x2, y2 in normalized coordinates
+legend.AddEntry(H_gammaPATpho, "PAT WP90 Cut", "l")  # "l" means line
+legend.AddEntry(H_gammaClust, "CLUE Clusters", "l")
+legend.Draw()
+C4.Update()
+C4.Print("CLUEandPATdc1p5rhoc15delt3v2.root")
