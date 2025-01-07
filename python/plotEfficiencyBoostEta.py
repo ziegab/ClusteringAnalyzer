@@ -45,7 +45,7 @@ for f in root_files:
                 if deltaR <= 0.5:
                     for i in range(T.nClusters[0]):
                         H_gammaEtaCLUE_EB.Fill(T.gammaval[0], T.higgs_eta[0], T.cluster_E[0])
-                        H_gammaEtaPAT_EB.Fill(T.gammaval[0], T.higgs_eta[0], T.EH[0])
+                    H_gammaEtaPAT_EB.Fill(T.gammaval[0], T.higgs_eta[0], T.EH[0])
         # if (abs(T.higgs_eta[0])>1.5):
         #     # Need to check if clusters are the right match (deltaR)
         #     if (len(T.cluster_eta)>0):

@@ -44,7 +44,7 @@ for f in root_files:
                 if deltaR <= 0.5:
                     for i in range(T.nClusters[0]):
                         H_gammaMassCLUE_EB.Fill(T.gammaval[0], T.mH[0], T.cluster_E[0])
-                        H_gammaMassPAT_EB.Fill(T.gammaval[0], T.mH[0], T.EH[0])
+                    H_gammaMassPAT_EB.Fill(T.gammaval[0], T.mH[0], T.EH[0])
 
 H_gammaMassCLUE_EB.Divide(H_gammaMassPAT_EB)
 gStyle.SetPalette(109)
