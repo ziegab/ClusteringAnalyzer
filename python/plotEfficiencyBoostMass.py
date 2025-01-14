@@ -21,9 +21,9 @@ bin_edges_x = np.logspace(np.log10(x_min), np.log10(x_max), n_bins_x + 1)
 bin_edges_y = np.logspace(np.log10(y_min), np.log10(y_max), n_bins_y + 1)
 
 H_gammaMassCLUE_EB = TH2F("Boost vs. Mass Cluster Energies", ";#gamma factor: Higgs Mass", n_bins_x, np.array(bin_edges_x, dtype=np.float64), n_bins_y, bin_edges_y)
-H_gammaMassPAT_EB = TH2F("Boost vs. Mass PAT Energies", ";#gamma factor: Higgs Mass", n_bins_x, np.array(bin_edges_x, dtype=np.float64), n_bins_y, bin_edges_y)
+H_gammaMassGEN_EB = TH2F("Boost vs. Mass GEN Energies", ";#gamma factor: Higgs Mass", n_bins_x, np.array(bin_edges_x, dtype=np.float64), n_bins_y, bin_edges_y)
 H_gammaMassCLUE_EB.SetStats(0)
-H_gammaMassPAT_EB.SetStats(0)
+H_gammaMassGEN_EB.SetStats(0)
 # H_gammaMass_EE = TH2F("Boost vs. Mass Clusters", ";#gamma factor: Higgs Mass", n_bins_x, np.array(bin_edges_x, dtype=np.float64), n_bins_y, bin_edges_y)
 # H_gammaMasscounter_EE = TH2F("Boost vs. Mass Clusters counter", ";#gamma factor: Higgs Mass", n_bins_x, np.array(bin_edges_x, dtype=np.float64), n_bins_y, bin_edges_y)
 # H_gammaMass_EE.SetStats(0)
@@ -43,10 +43,10 @@ for f in root_files:
                 deltaR = np.sqrt((deltaeta)**2 + (deltaphi)**2)
                 if deltaR <= 0.5:
                     for i in range(T.nClusters[0]):
-                        H_gammaMassCLUE_EB.Fill(T.gammaval[0], T.mH[0], T.cluster_E[0])
-                    H_gammaMassPAT_EB.Fill(T.gammaval[0], T.mH[0], T.EH[0])
+                        H_gammaMassCLUE_EB.Fill(T.gammaval[0], T.mH[0], T.EB_cluster_E[0])
+                    H_gammaMassGEN_EB.Fill(T.gammaval[0], T.mH[0], T.EH[0])
 
-H_gammaMassCLUE_EB.Divide(H_gammaMassPAT_EB)
+H_gammaMassCLUE_EB.Divide(H_gammaMassGEN_EB)
 gStyle.SetPalette(109)
 gStyle.SetPaintTextFormat("4.2f")
 C = TCanvas()

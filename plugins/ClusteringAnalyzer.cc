@@ -167,6 +167,7 @@ private:
   std::vector<float> mEE_cluster_x;
   std::vector<float> mEE_cluster_y;
   std::vector<double> higgs_eta;
+  std::vector<double> higgs_phi;
   std::vector<std::vector<float>> EB_E;
   std::vector<std::vector<float>> EB_eta;
   std::vector<std::vector<float>> EB_phi;
@@ -302,6 +303,8 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("mEE_cluster_y")->SetTitle("Y of the Cluster Seed in - Endcap");
   tree->Branch("higgs_eta", &higgs_eta);
   tree->GetBranch("higgs_eta")->SetTitle("Eta of Higgs");
+  tree->Branch("higgs_phi", &higgs_phi);
+  tree->GetBranch("higgs_phi")->SetTitle("Phi of Higgs");
   tree->Branch("EB_E", &EB_E);
   tree->GetBranch("EB_E")->SetTitle("Energy per hit in barrel per event");
   tree->Branch("EB_eta", &EB_eta);
@@ -360,7 +363,7 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("mES2_clustID")->SetTitle("ID of - preshower 2 cluster");
 
 
-  //  // ~~~~~~~~~ Include L358-L414 to make CLUE plots ~~~~~~~~~
+  //  // ~~~~~~~~~ Include L367-L423 to make CLUE plots ~~~~~~~~~ --> and also need to include filling histograms in each section of detector
   // for (unsigned int i=0; i < EventsToScan_.size(); i++){
   //   // ===== event maps ====== //
   //   // hname = Form("PATPhoton_event%i", EventsToScan_[i]) ;
@@ -459,6 +462,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   mEE_cluster_x.clear();
   mEE_cluster_y.clear();
   higgs_eta.clear();
+  higgs_phi.clear();
   EB_E.clear();
   EB_eta.clear();
   EB_phi.clear();
@@ -608,6 +612,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       gamma = gamma_L.Eval(beta); // Lorentz factor
       std::cout << "Boost: " << beta << ", gamma_L: " << gamma << std::endl;
       higgs_eta.push_back(gen.eta());
+      higgs_phi.push_back(gen.phi());
     }
 
     // if ((gen.pdgId() == 22) & (gen.status()==1) & (gen.pt()>10)){
@@ -823,7 +828,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   const float dc_EE = 1; //(for ECAL Endcap) chosen based on the shower size and the lateral granularity of detectors 
   const float dc_ES = 2; //(for ECAL preshower) chosen based on the shower size and the lateral granularity of detectors
   const float rhoc = 15; //chosen to exclude noise (Originally 5)
-  const float outlierDeltaFactor = 4; //chosen based on the shower sizes and separations
+  const float outlierDeltaFactor = 3; //chosen based on the shower sizes and separations
   const int Nevents = EventsToScan_.size();
   std::cout << "\n###########################################################" <<std::endl;
   std::cout << "Setting cut-off distance 'dc' for EB and EE to: "<< dc_EB << dc_EE << std::endl;
@@ -876,6 +881,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     }
     if (totClustE > 0){
       cluster_E.push_back(totClustE);
+      std::cout << "Cluster Energy, energy ratio: " << totClustE << "," << (totClustE/EH) << std::endl;
       cluster_eta.push_back(sumXE/totClustE);
       cluster_phi.push_back(sumYE/totClustE);
       EB_cluster_E.push_back(totClustE);

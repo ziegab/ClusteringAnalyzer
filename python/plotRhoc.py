@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import re
 
-# boost vs fraction of events passing the nClusters >= 1 cut with CLUE clusters
+# rhoc vs. energy efficiency (cluster/gen energy)
 
 file_dir = ['/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2rhoc5delt3',
             '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2rhoc10delt3',
