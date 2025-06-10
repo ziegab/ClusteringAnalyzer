@@ -130,6 +130,8 @@ private:
   void FillHist2D(const TString& histName, const Double_t& value1, const Double_t& value2, const double& weight);
   // void FillHist1D(const TString& histName, const Double_t& value, const double& weight);
 
+  // double manualDeltaR(const double& eta1, const double& eta2, const double& phi1, const double& phi2);
+
   // ----------member data ---------------------------
   //edm::EDGetTokenT<reco::TrackCollection> tracksToken_;  //used to select what tracks to read from configuration file
   edm::EDGetTokenT<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> >> ecalRecHitsEBToken_;
@@ -160,6 +162,8 @@ private:
   std::vector<float> EB_cluster_E;
   std::vector<float> EB_cluster_eta;
   std::vector<float> EB_cluster_phi;
+  std::vector<float> EB_cluster_realeta;
+  std::vector<float> EB_cluster_realphi;
   std::vector<float> pEE_cluster_E;
   std::vector<float> pEE_cluster_x;
   std::vector<float> pEE_cluster_y;
@@ -168,6 +172,12 @@ private:
   std::vector<float> mEE_cluster_y;
   std::vector<double> higgs_eta;
   std::vector<double> higgs_phi;
+  std::vector<std::vector<double>> genpho_E;
+  std::vector<std::vector<double>> genpho_eta;
+  std::vector<std::vector<double>> genpho_phi;
+  std::vector<std::vector<double>> genpho_pT;
+  // std::vector<std::vector<double>> genpho1_deltaR;
+  // std::vector<std::vector<double>> genpho2_deltaR;
   std::vector<std::vector<float>> EB_E;
   std::vector<std::vector<float>> EB_eta;
   std::vector<std::vector<float>> EB_phi;
@@ -293,6 +303,10 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("EB_cluster_eta")->SetTitle("Eta of the Cluster Seed in Barrel");
   tree->Branch("EB_cluster_phi", &EB_cluster_phi);
   tree->GetBranch("EB_cluster_phi")->SetTitle("Phi of the Cluster Seed in Barrel");
+  tree->Branch("EB_cluster_realeta", &EB_cluster_realeta);
+  tree->GetBranch("EB_cluster_realeta")->SetTitle("Eta of the Cluster in Barrel");
+  tree->Branch("EB_cluster_realphi", &EB_cluster_realphi);
+  tree->GetBranch("EB_cluster_realphi")->SetTitle("Phi of the Cluster in Barrel");
   tree->Branch("pEE_cluster_x", &pEE_cluster_x);
   tree->GetBranch("pEE_cluster_x")->SetTitle("X of the Cluster Seed in + Endcap");
   tree->Branch("pEE_cluster_y", &pEE_cluster_y);
@@ -305,6 +319,18 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("higgs_eta")->SetTitle("Eta of Higgs");
   tree->Branch("higgs_phi", &higgs_phi);
   tree->GetBranch("higgs_phi")->SetTitle("Phi of Higgs");
+  tree->Branch("genpho_E", &genpho_E);
+  tree->GetBranch("genpho_E")->SetTitle("Energy of Gen level photons");
+  tree->Branch("genpho_eta", &genpho_eta);
+  tree->GetBranch("genpho_eta")->SetTitle("Eta of Gen level photons");
+  tree->Branch("genpho_phi", &genpho_phi);
+  tree->GetBranch("genpho_phi")->SetTitle("Phi of Gen level photons");
+  tree->Branch("genpho_pT", &genpho_pT);
+  tree->GetBranch("genpho_pT")->SetTitle("Transverse Momentum of Gen level photons");
+  // tree->Branch("genpho1_deltaR", &genpho1_deltaR);
+  // tree->GetBranch("genpho1_deltaR")->SetTitle("DeltaR between Gen level photons and Clusters");
+  // tree->Branch("genpho2_deltaR", &genpho2_deltaR);
+  // tree->GetBranch("genpho2_deltaR")->SetTitle("DeltaR between Gen level photons and Clusters");
   tree->Branch("EB_E", &EB_E);
   tree->GetBranch("EB_E")->SetTitle("Energy per hit in barrel per event");
   tree->Branch("EB_eta", &EB_eta);
@@ -363,7 +389,7 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("mES2_clustID")->SetTitle("ID of - preshower 2 cluster");
 
 
-  //  // ~~~~~~~~~ Include L367-L423 to make CLUE plots ~~~~~~~~~ --> and also need to include filling histograms in each section of detector
+  // //  // ~~~~~~~~~ Include L367-L423 to make CLUE plots ~~~~~~~~~ --> and also need to include filling histograms in each section of detector
   // for (unsigned int i=0; i < EventsToScan_.size(); i++){
   //   // ===== event maps ====== //
   //   // hname = Form("PATPhoton_event%i", EventsToScan_[i]) ;
@@ -455,6 +481,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   EB_cluster_E.clear();
   EB_cluster_eta.clear();
   EB_cluster_phi.clear();
+  EB_cluster_realeta.clear();
+  EB_cluster_realphi.clear();
   pEE_cluster_E.clear();
   pEE_cluster_x.clear();
   pEE_cluster_y.clear();
@@ -463,6 +491,12 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   mEE_cluster_y.clear();
   higgs_eta.clear();
   higgs_phi.clear();
+  genpho_E.clear();
+  genpho_eta.clear();
+  genpho_phi.clear();
+  genpho_pT.clear();
+  // genpho1_deltaR.clear();
+  // genpho2_deltaR.clear();
   EB_E.clear();
   EB_eta.clear();
   EB_phi.clear();
@@ -499,6 +533,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   std::vector<float> v_eta;
   std::vector<float> v_phi;
+  std::vector<float> v_EBeta;
+  std::vector<float> v_EBphi;
   std::vector<int> v_layer;
   std::vector<float> v_weight;
 
@@ -585,6 +621,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   double gamma = -99; // 1/sqrt(1-beta^2), always positive
   double pTH = 0;
   double EH = 0;
+  std::vector<double> indgenpho_E;
+  std::vector<double> indgenpho_eta;
+  std::vector<double> indgenpho_phi;
+  std::vector<double> indgenpho_pT;
+  // std::vector<TLorentzVector> listgenphovec;
 
   TFormula gamma_L("lorentzFactor", "1/sqrt(1 - x^2)");
 
@@ -624,6 +665,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       pho_vec += tempgenvec;
       // hname = Form("genPhoton_event%i", nev);
       // FillHist2D(hname, gen.eta(), gen.phi(), gen.energy()) ;
+      indgenpho_E.push_back(gen.energy());
+      indgenpho_eta.push_back(gen.eta());
+      indgenpho_phi.push_back(gen.phi());
+      indgenpho_pT.push_back(gen.pt());
+      // listgenphovec.push_back(tempgenvec);
     }
 
     if ((gen.pdgId() != 22) & (gen.pdgId()!= 25)){
@@ -644,6 +690,10 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   gammaval.push_back(gamma);
   nPatPho.push_back(nPhotons);
   passesEvent.push_back(passEvent);
+  genpho_E.push_back(indgenpho_E);
+  genpho_eta.push_back(indgenpho_eta);
+  genpho_phi.push_back(indgenpho_phi);
+  genpho_pT.push_back(indgenpho_pT);
 
   //======= ECAL BARREL ==========
   edm::ESHandle<CaloGeometry> caloGeometry = iSetup.getHandle(caloGeometryToken_);
@@ -661,13 +711,13 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       EBDetId detID(iEB.id());
       // std::cout << "DetID: " << detID << std::endl;
       auto cell = EBgeom->getGeometry(detID);
-      // float eta, phi, E;
-      float E;
+      float eta, phi, E;
+      // float E;
       // float pT;
       // pT = cell->getPosition().rho();
       int layer = 0;
-      // eta = cell->getPosition().eta(); phi = cell->getPosition().phi(); E = iEB.energy();
-      E = iEB.energy();
+      eta = cell->getPosition().eta(); phi = cell->getPosition().phi(); E = iEB.energy();
+      // E = iEB.energy();
       // std::cout << "eta: "<< eta << " phi: "<< phi <<" Energy: " << E << std::endl;
       // std::cout << "ieta: "<< detID.ieta() << " iphi: "<< detID.iphi() <<" Energy: " << E << std::endl;
       // std::cout << "pT:" << detID.ipt() << std::endl;
@@ -680,6 +730,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // EBtotpT += tempEB;
       v_eta.push_back(detID.ieta());
       v_phi.push_back(detID.iphi());
+      v_EBeta.push_back(eta);
+      v_EBphi.push_back(phi);
       v_layer.push_back(layer);
       v_weight.push_back(E);
 
@@ -867,26 +919,33 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   // std::cout << "Events" << EventsToScan_ << std::endl;
 
+
   // // ~~~~~~~ Cluster Location and Info ~~~~~~~
   if (EBClusters>0) {for (int i =0; i<(EBClusters); i++){
     float totClustE = 0;
     float sumXE = 0;
     float sumYE = 0;
+    float sumiXE = 0;
+    float sumiYE = 0;
     for (int j=0; j<int(v_eta.size()); j++){
       if (v_clusterID_EB[j] == i){
         totClustE += v_weight[j];
-        sumXE += v_eta[j] * v_weight[j];
-        sumYE += v_phi[j] * v_weight[j];
+        sumXE += v_EBeta[j] * v_weight[j];
+        sumYE += v_EBphi[j] * v_weight[j];
+        sumiXE += v_eta[j] * v_weight[j];
+        sumiYE += v_phi[j] * v_weight[j];
       }
     }
     if (totClustE > 0){
       cluster_E.push_back(totClustE);
       std::cout << "Cluster Energy, energy ratio: " << totClustE << "," << (totClustE/EH) << std::endl;
-      cluster_eta.push_back(sumXE/totClustE);
-      cluster_phi.push_back(sumYE/totClustE);
+      cluster_eta.push_back(sumiXE/totClustE);
+      cluster_phi.push_back(sumiYE/totClustE);
       EB_cluster_E.push_back(totClustE);
-      EB_cluster_eta.push_back(sumXE/totClustE);
-      EB_cluster_phi.push_back(sumYE/totClustE);
+      EB_cluster_eta.push_back(sumiXE/totClustE);
+      EB_cluster_phi.push_back(sumiYE/totClustE);
+      EB_cluster_realeta.push_back(sumXE/totClustE);
+      EB_cluster_realphi.push_back(sumYE/totClustE);
     }
   }}
 
@@ -932,6 +991,17 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     }
   }}
 
+  // std::vector<std::vector<double>> indgenpho_deltaR;
+  // std::vector<double> deltaRperPho_EB;
+  
+  // for (int i=0; i<int(listgenphovec.size()); i++){
+  //   if (EBClusters>0) {for (int j=0; j<EBClusters; j++){
+  //     double dR = manualDeltaR(listgenphovec[i].Eta(), EB_cluster_eta[j], listgenphovec[i].Phi(), EB_cluster_phi[j]);
+  //     deltaRperPho_EB.push_back(dR);
+  //   }}
+  //   indgenpho_deltaR.push_back(deltaRperPho_EB);
+  //   deltaRperPho_EB.clear();
+  // }
 
 
   // double higgsE = EBtotE + EEtotE;
@@ -965,7 +1035,11 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   mES1_clustID.push_back(v_clusterID_ES1m);
   pES2_clustID.push_back(v_clusterID_ES2p);
   mES2_clustID.push_back(v_clusterID_ES2m);
+  // genpho1_deltaR.push_back(indgenpho_deltaR[0]);
+  // genpho2_deltaR.push_back(indgenpho_deltaR[1]);
 
+
+  // indgenpho_deltaR.clear();
   // // ~~~~~~~~~~~~~~ Making CSV File ~~~~~~~~~~~~~~~~~
   // double higgsE = EBtotE + EEtotE;
   // std::string filename = "clustering10.0Ma100.3000vpTME1.csv";
@@ -1061,6 +1135,13 @@ void ClusteringAnalyzer::FillHist2D(const TString& histName, const Double_t& val
   else
     hid->second->Fill(value1, value2, weight);
 }
+
+// double ClusteringAnalyzer::manualDeltaR(const double& eta1, const double& eta2, const double& phi1, const double& phi2)
+// {
+//   double dEta = eta1 - eta2;
+//   double dPhi = TVector2::Phi_mpi_pi(phi1-phi2);
+//   return std::sqrt(dEta*dEta + dPhi*dPhi);
+// }
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ClusteringAnalyzer);
