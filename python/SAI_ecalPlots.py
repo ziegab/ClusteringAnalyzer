@@ -17,9 +17,9 @@ def eta_to_ieta(eta_pho, ieta_clust, eta_clust):
     # elif 28 < ieta_pho < 86:
     #     ieta_pho = int(ieta_pho - 1) + 0.5
     if ieta_pho > 0:
-        ieta_pho = int(ieta_pho + 3) + 0.5
+        ieta_pho = int(ieta_pho + 0) + 0.5
     else:
-        ieta_pho = int(ieta_pho - 3) + 0.5
+        ieta_pho = int(ieta_pho + 1) + 0.5
     return ieta_pho
     # ieta = abs(eta_pho)/0.0175 + 0.5
     # if eta_pho < 0:
@@ -153,8 +153,9 @@ def PerClusterPlot(input):
                 C.cd()
                 H_ecalEB.SetTitle(f"DeltaR: {deltaR0}, {deltaR1} #gamma: {T.gammaval[0]}")
                 # gStyle.SetPalette(109)
+                gStyle.SetPaintTextFormat("4.2f")
                 # gPad.SetLogz()
-                H_ecalEB.Draw("h")
+                H_ecalEB.Draw("colztext")
                 pho1 = TMarker(eta_to_ieta(genphoeta[0], T.EB_cluster_eta[0], T.EB_cluster_realeta[0]), phi_to_iphi(genphophi[0], T.EB_cluster_phi[0], T.EB_cluster_realphi[0]), 29)
                 pho2 = TMarker(eta_to_ieta(genphoeta[1], T.EB_cluster_eta[0], T.EB_cluster_realeta[0]), phi_to_iphi(genphophi[1], T.EB_cluster_phi[0], T.EB_cluster_realphi[0]), 29)
                 clust = TMarker(T.EB_cluster_eta[0], T.EB_cluster_phi[0], 29)

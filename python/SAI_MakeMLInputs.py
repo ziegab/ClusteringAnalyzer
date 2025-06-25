@@ -111,12 +111,13 @@ def makeentry(l, output):
     phi = float(l[4])
     deltaR0 = float(l[5])
     deltaR1 = float(l[6])
+    C_2 = float(l[7])
     n_bins = 32
     length = float(int(n_bins/2))
     mH = E/gam
     H = TH2F("H", "#gamma = "+str(gam)+", E = "+str(E)+ " GeV, #eta = "+"{:.2f}".format(round(eta, 2))+", #phi = "+"{:.2f}".format(round(phi, 2))+";#eta;#phi", n_bins,-length,length,n_bins,-length,length)
     H.SetStats(0)
-    for i in range(7, len(l), 3):
+    for i in range(8, len(l), 3):
         H.Fill(int(l[i+1]),int(l[i+2]),float(l[i]))
     # maxcrystalE = H.GetBinContent(8, 8)
     # H.Scale(1.0 / maxcrystalE)
@@ -133,6 +134,7 @@ def makeentry(l, output):
         file.write(", " + str(E))
         file.write(", " + str(scaleeta))
         file.write(", " + str(scalephi))
+        file.write(", " + str(C_2))
         for y in range(n_bins,0,-1):
             # for x in range(17,0,-1):
             for x in range(1, (n_bins+1)):
@@ -144,13 +146,21 @@ def makeentry(l, output):
 
 import csv
 import sys
+import glob
 
-with open(sys.argv[1]) as csvfile:
-    reader = csv.reader(csvfile)
-    # mH = float(get_mass(str(sys.argv[1]), "SAIpreproc_AtoGG_"))
-    output = sys.argv[2]
-    n = 0
-    for row in reader:
-        n+=1
-        # makeentry(row, output, mH)
-        makeentry(row, output)
+file_dir = str(sys.argv[1])
+print(file_dir)
+csv_files = glob.glob(f"{file_dir}/*.csv")
+file_counter = 0
+
+for arg in sorted(csv_files):
+    file_counter += 1
+    with open(arg) as csvfile:
+        reader = csv.reader(csvfile)
+        # mH = float(get_mass(str(sys.argv[1]), "SAIpreproc_AtoGG_"))
+        output = "SAI_AtoGG_" + sys.argv[2] + "_MoE_32_Energy_totE_v" + str(file_counter)
+        n = 0
+        for row in reader:
+            n+=1
+            # makeentry(row, output, mH)
+            makeentry(row, output)

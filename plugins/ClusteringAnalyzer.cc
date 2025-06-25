@@ -152,6 +152,10 @@ private:
   std::vector<double> betaval;
   std::vector<double> gammaval;
   std::vector<int> nPatPho;
+  // std::vector<double> patpho_pt;
+  // std::vector<double> patpho_eta;
+  // std::vector<double> patpho_phi;
+  // std::vector<double> patpho_energy;
   std::vector<bool> passesEvent;
   std::vector<int> nClusters;
   std::vector<float> cluster_E;
@@ -199,6 +203,7 @@ private:
   std::vector<std::vector<float>> mES2_E;
   std::vector<std::vector<float>> mES2_x;
   std::vector<std::vector<float>> mES2_y;
+  std::vector<std::vector<float>> ESstrip;
   std::vector<std::vector<int>> EB_clustID;
   std::vector<std::vector<int>> pEE_clustID;
   std::vector<std::vector<int>> mEE_clustID;
@@ -279,6 +284,14 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("gammaval")->SetTitle("Lorentz Factor Value");
   tree->Branch("nphoton", &nPatPho);
   tree->GetBranch("nphoton")->SetTitle("Number of PAT Photons");
+  // tree->Branch("patpho_eta", &patpho_eta);
+  // tree->GetBranch("patpho_eta")->SetTitle("PAT eta");
+  // tree->Branch("patpho_pt", &patpho_pt);
+  // tree->GetBranch("patpho_pt")->SetTitle("PAT pt");
+  // tree->Branch("patpho_phi", &patpho_phi);
+  // tree->GetBranch("patpho_phi")->SetTitle("PAT phi");
+  // tree->Branch("patpho_energy", &patpho_energy);
+  // tree->GetBranch("patpho_energy")->SetTitle("PAT energy");
   tree->Branch("passEvent", &passesEvent);
   tree->GetBranch("passEvent")->SetTitle("PAT Photons Exist");
   tree->Branch("nClusters", &nClusters);
@@ -373,6 +386,8 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("mES2_x")->SetTitle("X of hit in - preshower 2 per event");
   tree->Branch("mES2_y", &mES2_y);
   tree->GetBranch("mES2_y")->SetTitle("Y of hit in - preshower 2 per event");
+  tree->Branch("ESstrip", &ESstrip);
+  tree->GetBranch("ESstrip")->SetTitle("Strip Number of crystals in Preshower");
   tree->Branch("EB_clustID", &EB_clustID);
   tree->GetBranch("EB_clustID")->SetTitle("ID of barrel cluster");
   tree->Branch("pEE_clustID", &pEE_clustID);
@@ -471,6 +486,10 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   betaval.clear();
   gammaval.clear();
   nPatPho.clear();
+  // patpho_pt.clear();
+  // patpho_eta.clear();
+  // patpho_phi.clear();
+  // patpho_energy.clear();
   passesEvent.clear();
   nClusters.clear();
   cluster_E.clear();
@@ -518,6 +537,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   mES2_E.clear();
   mES2_x.clear();
   mES2_y.clear();
+  ESstrip.clear();
   EB_clustID.clear();
   pEE_clustID.clear();
   mEE_clustID.clear();
@@ -580,6 +600,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   std::vector<int> v_layer_mES2;
   std::vector<float> v_weight_mES2;
 
+  std::vector<float> EScrystalstrip;
+
 
   //======= PAT PHOTONS =======
   edm::Handle<std::vector<pat::Photon> > patpho;
@@ -593,6 +615,10 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     const pat::Photon & p = (*patpho)[i];
     std::cout << "Found a PAT photon with pt, eta, phi, energy : " << p.pt() << ", " << p.eta() << ", " << p.phi() << ", " << p.energy() << std::endl;
     std::cout << "Is Photon ID Available: " << p.isPhotonIDAvailable("mvaPhoID-RunIIFall17-v2-wp90") <<  std::endl;
+    // patpho_pt.push_back(p.pt());
+    // patpho_eta.push_back(p.eta());
+    // patpho_phi.push_back(p.phi());
+    // patpho_energy.push_back(p.energy());
     if ((p.pt()>10) & p.photonID("mvaPhoID-RunIIFall17-v2-wp90")){ // pt and ID cut on PAT photons
       nPhotons++; // increment the photon count in each step
       passEvent = true;
@@ -814,6 +840,8 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       auto cell = ESgeom->getGeometry(detID);
       float eta, phi, E;
       int layer = 0;
+      float strip = detID.strip();
+      EScrystalstrip.push_back(strip);
       eta = cell->getPosition().eta(); phi = cell->getPosition().phi(); E = iES.energy();
       // std::cout << "ix: "<< detID.six() << " iy: "<< detID.siy() << std::endl;
       // std::cout << "x: "<< cell->getPosition().x() << " y: "<< cell->getPosition().y() <<" z: " << cell->getPosition().z() << std::endl;
@@ -1028,6 +1056,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   mES2_E.push_back(v_weight_mES2);
   mES2_x.push_back(v_x_mES2);
   mES2_y.push_back(v_y_mES2);
+  ESstrip.push_back(EScrystalstrip);
   EB_clustID.push_back(v_clusterID_EB);
   pEE_clustID.push_back(v_clusterID_EEp);
   mEE_clustID.push_back(v_clusterID_EEm);
