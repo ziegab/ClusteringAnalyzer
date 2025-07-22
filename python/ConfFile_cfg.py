@@ -12,7 +12,7 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v20'
 
-nevents = 500
+nevents = 5000
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(nevents) )
 
 process.source = cms.Source("PoolSource",
@@ -39,7 +39,7 @@ process.source = cms.Source("PoolSource",
 process.TFileService = cms.Service("TFileService", 
                                   #  fileName = cms.string('hist_ClusteringAnalyzer_AtoGG_500events1.0Ma1000.10000pTPU.root')
                                   #  fileName = cms.string('hist_AtoGG_1000events25p0Ma2dc15rhoc3delt.root')
-                                  fileName = cms.string('hist_AtoGG_'+str(nevents)+'events_'+sys.argv[4]+'_MoE2dc15rhoc3deltnoresv'+sys.argv[3]+'.root')
+                                  fileName = cms.string('hist_AtoGG_'+str(nevents)+'events_'+sys.argv[4]+'_Ma2dc15rhoc3deltnoresv'+sys.argv[3]+'.root')
                                   #  fileName = cms.string('histplots_AtoGG_100events0p1Ma2dc15rhoc3delt.root')
                                   #  fileName = cms.string('hist_ClusteringAnalyzer_AtoGG500events10.0Ma100.3000pTPU.root')
                                   #  fileName = cms.string('hist_ClusteringAnalyzer_1Dinfo')
@@ -52,6 +52,7 @@ process.clus = cms.EDAnalyzer('ClusteringAnalyzer',
    ecalRechitsES = cms.InputTag('reducedEgamma','reducedESRecHits'),
    genParticles = cms.InputTag('packedGenParticles'),
    genRecoParticles = cms.InputTag('prunedGenParticles'),
+   vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices'),
    photons = cms.InputTag('slimmedPhotons'),
   #  electrons = cms.InputTag('slimmedElectrons'),
    EventsToScan = cms.vint32(eventN),

@@ -107,18 +107,17 @@ def makeentry(l, output):
     index = int(l[0])
     gam = (float(l[1]))
     E = (float(l[2]))
-    E_clust = float(l[3])
-    eta = float(l[4])
-    phi = float(l[5])
-    deltaR0 = float(l[6])
-    deltaR1 = float(l[7])
+    eta = float(l[3])
+    phi = float(l[4])
+    # deltaR0 = float(l[5])
+    # deltaR1 = float(l[6])
     # C_2 = float(l[7])
     n_bins = 32
     length = float(int(n_bins/2))
     mH = E/gam
     H = TH2F("H", "#gamma = "+str(gam)+", E = "+str(E)+ " GeV, #eta = "+"{:.2f}".format(round(eta, 2))+", #phi = "+"{:.2f}".format(round(phi, 2))+";#eta;#phi", n_bins,-length,length,n_bins,-length,length)
     H.SetStats(0)
-    for i in range(8, len(l), 3):
+    for i in range(5, len(l), 3):
         H.Fill(int(l[i+1]),int(l[i+2]),float(l[i]))
     # maxcrystalE = H.GetBinContent(8, 8)
     # H.Scale(1.0 / maxcrystalE)
@@ -133,7 +132,6 @@ def makeentry(l, output):
         file.write(", " + str(gam))
         file.write(", " + str(mH))
         file.write(", " + str(E))
-        file.write(", " + str(E_clust))
         file.write(", " + str(scaleeta))
         file.write(", " + str(scalephi))
         # file.write(", " + str(C_2))
@@ -159,16 +157,12 @@ for arg in sorted(csv_files):
     file_counter += 1
     startidx1 = arg.find("v")
     startidx2 = arg.find("v", startidx1 + 1)
-    endidx = arg.rfind(".root")
-    MaIdx1 = arg.find("events_")
-    # MaEnd = arg.rfind("_Ma2dc15")
-    MassPoint = arg[(MaIdx1 + 7):(startidx2 - 1)]
+    endidx = arg.rfind(".csv")
     versionname = arg[(startidx2 + 1):endidx]
     with open(arg) as csvfile:
         reader = csv.reader(csvfile)
         # mH = float(get_mass(str(sys.argv[1]), "SAIpreproc_AtoGG_"))
-        # output = "SAI_AtoGG_" + sys.argv[2] + "_MoE_32_Energy_totE_v" + str(file_counter)
-        output = "SAI_AtoGG_" + str(MassPoint) + "_MoE_32_Energy_totE_v" + str(versionname)
+        output = "SAI_AtoGG_" + sys.argv[2] + "_MoE_32_Energy_totE_v" + str(versionname)
         n = 0
         for row in reader:
             n+=1

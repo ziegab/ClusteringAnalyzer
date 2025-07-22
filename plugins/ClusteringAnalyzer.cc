@@ -140,6 +140,7 @@ private:
   edm::EDGetTokenT<vector<pat::Photon>> photonToken_;
   edm::EDGetTokenT<vector<pat::PackedGenParticle>> genPartToken_;
   edm::EDGetTokenT<vector<reco::GenParticle>> genPartRecoToken_;
+  edm::EDGetTokenT<std::vector<reco::Vertex>> vertexToken_;
   // edm::EDGetTokenT<vector<pat::Electron>> electronToken_;
 
   edm::ESGetToken<CaloGeometry, CaloGeometryRecord> caloGeometryToken_;
@@ -176,6 +177,7 @@ private:
   std::vector<float> mEE_cluster_y;
   std::vector<double> higgs_eta;
   std::vector<double> higgs_phi;
+  std::vector<float> PV_z;
   std::vector<std::vector<double>> genpho_E;
   std::vector<std::vector<double>> genpho_eta;
   std::vector<std::vector<double>> genpho_phi;
@@ -185,24 +187,42 @@ private:
   std::vector<std::vector<float>> EB_E;
   std::vector<std::vector<float>> EB_eta;
   std::vector<std::vector<float>> EB_phi;
+  std::vector<std::vector<float>> EE_x;
+  std::vector<std::vector<float>> EE_y;
+  std::vector<std::vector<float>> EE_z;
+  std::vector<std::vector<float>> ES_x;
+  std::vector<std::vector<float>> ES_y;
+  std::vector<std::vector<float>> ES_z;
   std::vector<std::vector<float>> pEE_E;
   std::vector<std::vector<float>> pEE_x;
   std::vector<std::vector<float>> pEE_y;
+  std::vector<std::vector<float>> pEE_eta;
+  std::vector<std::vector<float>> pEE_phi;
   std::vector<std::vector<float>> mEE_E;
   std::vector<std::vector<float>> mEE_x;
   std::vector<std::vector<float>> mEE_y;
+  std::vector<std::vector<float>> mEE_eta;
+  std::vector<std::vector<float>> mEE_phi;
   std::vector<std::vector<float>> pES1_E;
   std::vector<std::vector<float>> pES1_x;
   std::vector<std::vector<float>> pES1_y;
+  std::vector<std::vector<float>> pES1_eta;
+  std::vector<std::vector<float>> pES1_phi;
   std::vector<std::vector<float>> pES2_E;
   std::vector<std::vector<float>> pES2_x;
   std::vector<std::vector<float>> pES2_y;
+  std::vector<std::vector<float>> pES2_eta;
+  std::vector<std::vector<float>> pES2_phi;
   std::vector<std::vector<float>> mES1_E;
   std::vector<std::vector<float>> mES1_x;
   std::vector<std::vector<float>> mES1_y;
+  std::vector<std::vector<float>> mES1_eta;
+  std::vector<std::vector<float>> mES1_phi;
   std::vector<std::vector<float>> mES2_E;
   std::vector<std::vector<float>> mES2_x;
   std::vector<std::vector<float>> mES2_y;
+  std::vector<std::vector<float>> mES2_eta;
+  std::vector<std::vector<float>> mES2_phi;
   std::vector<std::vector<float>> ESstrip;
   std::vector<std::vector<int>> EB_clustID;
   std::vector<std::vector<int>> pEE_clustID;
@@ -240,6 +260,7 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
         photonToken_(consumes<vector<pat::Photon>>(iConfig.getParameter<edm::InputTag > ("photons"))),
         genPartToken_(consumes<vector<pat::PackedGenParticle>>(iConfig.getParameter<edm::InputTag > ("genParticles"))),
         genPartRecoToken_(consumes<vector<reco::GenParticle>>(iConfig.getParameter<edm::InputTag > ("genRecoParticles"))),
+        vertexToken_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag> ("vertexCollection"))),
         // electronToken_(consumes<vector<pat::Electron>>(iConfig.getParameter<edm::InputTag > ("electrons"))),
 
         caloGeometryToken_(esConsumes()),
@@ -332,6 +353,8 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("higgs_eta")->SetTitle("Eta of Higgs");
   tree->Branch("higgs_phi", &higgs_phi);
   tree->GetBranch("higgs_phi")->SetTitle("Phi of Higgs");
+  tree->Branch("PV_z", &PV_z);
+  tree->GetBranch("PV_z")->SetTitle("Z of Primary Vertex");
   tree->Branch("genpho_E", &genpho_E);
   tree->GetBranch("genpho_E")->SetTitle("Energy of Gen level photons");
   tree->Branch("genpho_eta", &genpho_eta);
@@ -350,42 +373,78 @@ ClusteringAnalyzer::ClusteringAnalyzer(const edm::ParameterSet& iConfig):
   tree->GetBranch("EB_eta")->SetTitle("X of hit in barrel per event");
   tree->Branch("EB_phi", &EB_phi);
   tree->GetBranch("EB_phi")->SetTitle("Phi of hit in barrel per event");
+  tree->Branch("EE_x", &EE_x);
+  tree->GetBranch("EE_x")->SetTitle("X of hit in endcap per event");
+  tree->Branch("EE_y", &EE_y);
+  tree->GetBranch("EE_y")->SetTitle("Y of hit in endcap per event");
+  tree->Branch("EE_z", &EE_z);
+  tree->GetBranch("EE_z")->SetTitle("Z of hit in endcap per event");
+  tree->Branch("ES_x", &ES_x);
+  tree->GetBranch("ES_x")->SetTitle("X of hit in preshower per event");
+  tree->Branch("ES_y", &ES_y);
+  tree->GetBranch("ES_y")->SetTitle("Y of hit in preshower per event");
+  tree->Branch("ES_z", &ES_z);
+  tree->GetBranch("ES_z")->SetTitle("Z of hit in preshower per event");
   tree->Branch("pEE_E", &pEE_E);
   tree->GetBranch("pEE_E")->SetTitle("Energy per hit in + endcap per event");
   tree->Branch("pEE_x", &pEE_x);
   tree->GetBranch("pEE_x")->SetTitle("X of hit in + endcap per event");
   tree->Branch("pEE_y", &pEE_y);
   tree->GetBranch("pEE_y")->SetTitle("Y of hit in + endcap per event");
+  tree->Branch("pEE_eta", &pEE_eta);
+  tree->GetBranch("pEE_eta")->SetTitle("Eta of hit in + endcap per event");
+  tree->Branch("pEE_phi", &pEE_phi);
+  tree->GetBranch("pEE_phi")->SetTitle("Phi of hit in + endcap per event");
   tree->Branch("mEE_E", &mEE_E);
   tree->GetBranch("mEE_E")->SetTitle("Energy per hit in - endcap per event");
   tree->Branch("mEE_x", &mEE_x);
   tree->GetBranch("mEE_x")->SetTitle("X of hit in - endcap per event");
   tree->Branch("mEE_y", &mEE_y);
   tree->GetBranch("mEE_y")->SetTitle("Y of hit in - endcap per event");
+  tree->Branch("mEE_eta", &mEE_eta);
+  tree->GetBranch("mEE_eta")->SetTitle("Eta of hit in - endcap per event");
+  tree->Branch("mEE_phi", &mEE_phi);
+  tree->GetBranch("mEE_phi")->SetTitle("Phi of hit in - endcap per event");
   tree->Branch("pES1_E", &pES1_E);
   tree->GetBranch("pES1_E")->SetTitle("Energy per hit in + preshower 1 per event");
   tree->Branch("pES1_x", &pES1_x);
   tree->GetBranch("pES1_x")->SetTitle("X of hit in + preshower 1 per event");
   tree->Branch("pES1_y", &pES1_y);
   tree->GetBranch("pES1_y")->SetTitle("Y of hit in + preshower 1 per event");
+  tree->Branch("pES1_eta", &pES1_eta);
+  tree->GetBranch("pES1_eta")->SetTitle("Eta of hit in + preshower 1 per event");
+  tree->Branch("pES1_phi", &pES1_phi);
+  tree->GetBranch("pES1_phi")->SetTitle("Phi of hit in + preshower 1 per event");
   tree->Branch("pES2_E", &pES2_E);
   tree->GetBranch("pES2_E")->SetTitle("Energy per hit in + preshower 2 per event");
   tree->Branch("pES2_x", &pES2_x);
   tree->GetBranch("pES2_x")->SetTitle("X of hit in + preshower 2 per event");
   tree->Branch("pES2_y", &pES2_y);
   tree->GetBranch("pES2_y")->SetTitle("Y of hit in + preshower 2 per event");
+  tree->Branch("pES2_eta", &pES2_eta);
+  tree->GetBranch("pES2_eta")->SetTitle("Eta of hit in + preshower 2 per event");
+  tree->Branch("pES2_phi", &pES2_phi);
+  tree->GetBranch("pES2_phi")->SetTitle("Phi of hit in + preshower 2 per event");
   tree->Branch("mES1_E", &mES1_E);
   tree->GetBranch("mES1_E")->SetTitle("Energy per hit in - preshower 1 per event");
   tree->Branch("mES1_x", &mES1_x);
   tree->GetBranch("mES1_x")->SetTitle("X of hit in - preshower 1 per event");
   tree->Branch("mES1_y", &mES1_y);
   tree->GetBranch("mES1_y")->SetTitle("Y of hit in - preshower 1 per event");
+  tree->Branch("mES1_eta", &mES1_eta);
+  tree->GetBranch("mES1_eta")->SetTitle("Eta of hit in - preshower 1 per event");
+  tree->Branch("mES1_phi", &mES1_phi);
+  tree->GetBranch("mES1_phi")->SetTitle("Phi of hit in - preshower 1 per event");
   tree->Branch("mES2_E", &mES2_E);
   tree->GetBranch("mES2_E")->SetTitle("Energy per hit in - preshower 2 per event");
   tree->Branch("mES2_x", &mES2_x);
   tree->GetBranch("mES2_x")->SetTitle("X of hit in - preshower 2 per event");
   tree->Branch("mES2_y", &mES2_y);
   tree->GetBranch("mES2_y")->SetTitle("Y of hit in - preshower 2 per event");
+  tree->Branch("mES2_eta", &mES2_eta);
+  tree->GetBranch("mES2_eta")->SetTitle("Eta of hit in - preshower 2 per event");
+  tree->Branch("mES2_phi", &mES2_phi);
+  tree->GetBranch("mES2_phi")->SetTitle("Phi of hit in - preshower 2 per event");
   tree->Branch("ESstrip", &ESstrip);
   tree->GetBranch("ESstrip")->SetTitle("Strip Number of crystals in Preshower");
   tree->Branch("EB_clustID", &EB_clustID);
@@ -510,6 +569,7 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   mEE_cluster_y.clear();
   higgs_eta.clear();
   higgs_phi.clear();
+  PV_z.clear();
   genpho_E.clear();
   genpho_eta.clear();
   genpho_phi.clear();
@@ -519,24 +579,42 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   EB_E.clear();
   EB_eta.clear();
   EB_phi.clear();
+  EE_x.clear();
+  EE_y.clear();
+  EE_z.clear();
+  ES_x.clear();
+  ES_y.clear();
+  ES_z.clear();
   pEE_E.clear();
   pEE_x.clear();
   pEE_y.clear();
+  pEE_eta.clear();
+  pEE_phi.clear();
   mEE_E.clear();
   mEE_x.clear();
   mEE_y.clear();
+  mEE_eta.clear();
+  mEE_phi.clear();
   pES1_E.clear();
   pES1_x.clear();
   pES1_y.clear();
+  pES1_eta.clear();
+  pES1_phi.clear();
   mES1_E.clear();
   mES1_x.clear();
   mES1_y.clear();
+  mES1_eta.clear();
+  mES1_phi.clear();
   pES2_E.clear();
   pES2_x.clear();
   pES2_y.clear();
+  pES2_eta.clear();
+  pES2_phi.clear();
   mES2_E.clear();
   mES2_x.clear();
   mES2_y.clear();
+  mES2_eta.clear();
+  mES2_phi.clear();
   ESstrip.clear();
   EB_clustID.clear();
   pEE_clustID.clear();
@@ -601,6 +679,14 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   std::vector<float> v_weight_mES2;
 
   std::vector<float> EScrystalstrip;
+  std::vector<float> EE_x_event;
+  std::vector<float> EE_y_event;
+  std::vector<float> EE_z_event;
+  std::vector<float> ES_x_event;
+  std::vector<float> ES_y_event;
+  std::vector<float> ES_z_event;
+
+
 
 
   //======= PAT PHOTONS =======
@@ -632,6 +718,20 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 //   edm::Handle<std::vector<pat::Electron> > elec;
 //   iEvent.getByToken(electronToken_, elec);
 //   std::cout << "PAT electrons detected: " << elec->size() << std::endl;
+
+
+  //======= PRIMARY VERTICES =======
+  edm::Handle<std::vector<reco::Vertex>> vertices;
+  iEvent.getByToken(vertexToken_, vertices);
+  if (!vertices->empty()) {
+    const reco::Vertex& pv = vertices->front();
+    // float pv_x = pv.x();
+    // float pv_y = pv.y();
+    float pv_z = pv.z();
+    // float pv_ndof = pv.ndof();
+    // bool pv_isValid = pv.isValid();
+    PV_z.push_back(pv_z);
+  }
 
   //======= GEN PARTICLES =======
   edm::Handle<std::vector<pat::PackedGenParticle> > genPart;
@@ -787,8 +887,13 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // std::cout << "DetID: " << detID << std::endl;
       auto cell = EEgeom->getGeometry(detID);
       float eta, phi, E;
+      float x, y, z;
       int layer = 0;
       eta = cell->getPosition().eta(); phi = cell->getPosition().phi(); E = iEE.energy();
+      x = cell->getPosition().x(); y = cell->getPosition().y(); z = cell->getPosition().z();
+      EE_x_event.push_back(x);
+      EE_y_event.push_back(y);
+      EE_z_event.push_back(z);
       // std::cout << "ix: "<< detID.ix() << " iy: "<< detID.iy() << std::endl;
       // std::cout << "x: "<< cell->getPosition().x() << " y: "<< cell->getPosition().y() <<" z: " << cell->getPosition().z() << std::endl;
       // std::cout << "eta: "<< cell->getPosition().eta() << " phi: "<< cell->getPosition().phi() <<" Energy: " << E << std::endl;
@@ -839,10 +944,15 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       // std::cout << "DetID: " << detID << std::endl;
       auto cell = ESgeom->getGeometry(detID);
       float eta, phi, E;
+      float x, y, z;
       int layer = 0;
       float strip = detID.strip();
       EScrystalstrip.push_back(strip);
       eta = cell->getPosition().eta(); phi = cell->getPosition().phi(); E = iES.energy();
+      x = cell->getPosition().x(); y = cell->getPosition().y(); z = cell->getPosition().z();
+      ES_x_event.push_back(x);
+      ES_y_event.push_back(y);
+      ES_z_event.push_back(z);
       // std::cout << "ix: "<< detID.six() << " iy: "<< detID.siy() << std::endl;
       // std::cout << "x: "<< cell->getPosition().x() << " y: "<< cell->getPosition().y() <<" z: " << cell->getPosition().z() << std::endl;
       // std::cout << "eta: "<< cell->getPosition().eta() << " phi: "<< cell->getPosition().phi() <<" Energy: " << E << std::endl;
@@ -981,17 +1091,23 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     float totClustE = 0;
     float sumXE = 0;
     float sumYE = 0;
+    float sumEtaE = 0;
+    float sumPhiE = 0;
     for (int j=0; j<int(v_eta_pEE.size()); j++){
       if (v_clusterID_EEp[j] == i){
         totClustE += v_weight_pEE[j];
         sumXE += v_x_pEE[j] * v_weight_pEE[j];
         sumYE += v_y_pEE[j] * v_weight_pEE[j];
+        sumEtaE += v_eta_pEE[j] * v_weight_pEE[j];
+        sumPhiE += v_phi_pEE[j] * v_weight_pEE[j];
       }
     }
     if (totClustE > 0){
       cluster_E.push_back(totClustE);
       cluster_x.push_back(sumXE/totClustE);
       cluster_y.push_back(sumYE/totClustE);
+      cluster_eta.push_back(sumEtaE/totClustE);
+      cluster_phi.push_back(sumPhiE/totClustE);
       pEE_cluster_E.push_back(totClustE);
       pEE_cluster_x.push_back(sumXE/totClustE);
       pEE_cluster_y.push_back(sumYE/totClustE);
@@ -1002,17 +1118,23 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     float totClustE = 0;
     float sumXE = 0;
     float sumYE = 0;
+    float sumEtaE = 0;
+    float sumPhiE = 0;
     for (int j=0; j<int(v_eta_mEE.size()); j++){
       if (v_clusterID_EEm[j] == i){
         totClustE += v_weight_mEE[j];
         sumXE += v_x_mEE[j] * v_weight_mEE[j];
         sumYE += v_y_mEE[j] * v_weight_mEE[j];
+        sumEtaE += v_eta_mEE[j] * v_weight_mEE[j];
+        sumPhiE += v_phi_mEE[j] * v_weight_mEE[j];
       }
     }
     if (totClustE > 0){
       cluster_E.push_back(totClustE);
       cluster_x.push_back(sumXE/totClustE);
       cluster_y.push_back(sumYE/totClustE);
+      cluster_eta.push_back(sumEtaE/totClustE);
+      cluster_phi.push_back(sumPhiE/totClustE);
       mEE_cluster_E.push_back(totClustE);
       mEE_cluster_x.push_back(sumXE/totClustE);
       mEE_cluster_y.push_back(sumYE/totClustE);
@@ -1038,24 +1160,42 @@ void ClusteringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   EB_E.push_back(v_weight);
   EB_eta.push_back(v_eta);
   EB_phi.push_back(v_phi);
+  EE_x.push_back(EE_x_event);
+  EE_y.push_back(EE_y_event);
+  EE_z.push_back(EE_z_event);
+  ES_x.push_back(ES_x_event);
+  ES_y.push_back(ES_y_event);
+  ES_z.push_back(ES_z_event);
   pEE_E.push_back(v_weight_pEE);
   pEE_x.push_back(v_x_pEE);
   pEE_y.push_back(v_y_pEE);
+  pEE_eta.push_back(v_eta_pEE);
+  pEE_phi.push_back(v_phi_pEE);
   mEE_E.push_back(v_weight_mEE);
   mEE_x.push_back(v_x_mEE);
   mEE_y.push_back(v_y_mEE);
+  mEE_eta.push_back(v_eta_mEE);
+  mEE_phi.push_back(v_phi_mEE);
   pES1_E.push_back(v_weight_pES1);
   pES1_x.push_back(v_x_pES1);
   pES1_y.push_back(v_y_pES1);
+  pES1_eta.push_back(v_eta_pES1);
+  pES1_phi.push_back(v_phi_pES1);
   pES2_E.push_back(v_weight_pES2);
   pES2_x.push_back(v_x_pES2);
   pES2_y.push_back(v_y_pES2);
+  pES2_eta.push_back(v_eta_pES2);
+  pES2_phi.push_back(v_phi_pES2);
   mES1_E.push_back(v_weight_mES1);
   mES1_x.push_back(v_x_mES1);
   mES1_y.push_back(v_y_mES1);
+  mES1_eta.push_back(v_eta_mES1);
+  mES1_phi.push_back(v_phi_mES1);
   mES2_E.push_back(v_weight_mES2);
   mES2_x.push_back(v_x_mES2);
   mES2_y.push_back(v_y_mES2);
+  mES2_eta.push_back(v_eta_mES2);
+  mES2_phi.push_back(v_phi_mES2);
   ESstrip.push_back(EScrystalstrip);
   EB_clustID.push_back(v_clusterID_EB);
   pEE_clustID.push_back(v_clusterID_EEp);

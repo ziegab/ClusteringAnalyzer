@@ -6,20 +6,22 @@ import re
 
 # boost vs fraction of events passing the nClusters >= 1 cut with CLUE clusters
 
-file_dir = ['/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc1rhoc15delt3',
-            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc1p5rhoc15delt3',
-            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2rhoc15delt3',
-            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc2p5rhoc15delt3',
-            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/dc3rhoc15delt3']
+file_dir = ['/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/EEdc0p5rhoc15delt3',
+            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/EEdc1rhoc15delt3',
+            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/EEdc1p5rhoc15delt3',
+            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/EEdc2rhoc15delt3',
+            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/EEdc2p5rhoc15delt3',
+            '/afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/EEdc3rhoc15delt3']
 
-boosts = [10, 20, 50, 100, 200, 500, 700, 1000]
-dcvals = [1, 1.5, 2, 2.5, 3]
+# boosts = [10, 20, 50, 100, 200, 500, 700, 1000]
+boosts = [15, 30, 50, 80, 110, 140, 175, 200]
+dcvals = [0.5, 1, 1.5, 2, 2.5, 3]
 histograms = []
 
 for g in boosts:
     hname = f"boost{g}"
-    htitle = f";dc value; Avg. CLUE Cluster per EB Event"
-    hist = TH1F(hname, htitle, 5, 0.75, 3.25)
+    htitle = f";dc value; Avg. CLUE Cluster per EE Event"
+    hist = TH1F(hname, htitle, 6, 0.25, 3.25)
     histograms.append(hist)
 
 for g in range(len(boosts)):
@@ -31,7 +33,7 @@ for g in range(len(boosts)):
             F = TFile(root_file)
             T = F.Get("clus/Events")
             for e in T:
-                if (abs(T.higgs_eta[0])<1.5) and (boosts[g]-1) < T.gammaval[0] < (boosts[g]+1):
+                if (abs(T.higgs_eta[0])>1.4) and (boosts[g]-1) < T.gammaval[0] < (boosts[g]+1):
                     EBevents += 1
                     if (len(T.nClusters)>0):
                         EBclusttot += T.nClusters[0]
@@ -50,5 +52,5 @@ for idx, hist in enumerate(histograms):
     draw_option = "hist" if idx == 0 else "hist SAME"
     hist.Draw(draw_option)
 legend.Draw()
-C.Print("dcv1.root")
+C.Print("EEdcv1.root")
             

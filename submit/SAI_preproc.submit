@@ -1,0 +1,15 @@
+executable = /afs/cern.ch/user/g/gziemyte/private/CMSSW_13_2_4/src/test/clusteringanalyzer/submit/SAI_submit_preproc.sh
+output = /afs/cern.ch/user/g/gziemyte/public/SAI_submit_preproc.out
+error = /afs/cern.ch/user/g/gziemyte/public/SAI_submit_preproc.err
+log = /afs/cern.ch/user/g/gziemyte/public/SAI_submit_preproc.log
+MY.WantOS = "el9"
++JobFlavour = "testmatch"
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = ""
+
+request_cpus = 1
+request_memory = 10000
++RequestDisk = 100000
+queue
